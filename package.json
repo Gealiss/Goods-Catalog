@@ -1,0 +1,17 @@
+{
+  "name": "goods-catalog",
+  "version": "1.0.0",
+  "description": "online goods catalog.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nodejs"
+  ],
+  "author": "Gealiss",
+  "license": "GPL-3.0-only",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
