@@ -1,6 +1,6 @@
-exports.index = function (request, response) {
-    response.send("Главная страница");
+exports.index = function (req, res) {
+    res.send("Главная страница");
 };
-exports.about = function (request, response) {
-    response.send("О сайте");
+exports.about = function (req, res) {
+    res.send("О сайте");
 };
