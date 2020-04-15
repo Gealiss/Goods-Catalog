@@ -2,3 +2,6 @@
 .env
 .key
 .csr
+config.json
+*.csr
+*.key
