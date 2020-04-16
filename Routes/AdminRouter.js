@@ -1,6 +1,9 @@
 const express = require("express");
 const adminController = require("../Controllers/AdminController.js");
 let passport = require('passport');
+var util = require('util');
+var url = require('url');
+var querystring = require('querystring');
 const adminRouter = express.Router();
 
 
@@ -29,8 +32,31 @@ adminRouter.get('/auth', function (req, res, next) {
         res.redirect(returnTo || '/');
       });
     })(req, res, next);
-  });
+  }
+);
 
+// Perform session logout and redirect to homepage
+adminRouter.get('/logout', (req, res) => {
+  req.logout();
+
+  var returnTo = req.protocol + '://' + req.hostname;
+  var port = req.connection.localPort;
+  if (port !== undefined && port !== 80 && port !== 443) {
+    returnTo += ':' + port;
+  }
+  var logoutURL = new url.URL(
+    util.format('https://%s/v2/logout', process.env.AUTH0_DOMAIN)
+  );
+  var searchString = querystring.stringify({
+    client_id: process.env.AUTH0_CLIENT_ID,
+    returnTo: returnTo
+  });
+  logoutURL.search = searchString;
+
+  res.redirect(logoutURL);
+});
+
+  
 adminRouter.get("/about", adminController.about);
 adminRouter.get("/", adminController.index);
  
