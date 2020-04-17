@@ -2,16 +2,32 @@ const express = require('express');
 const fs = require('fs');
 let http = require('http');
 let https = require('https');
-const config = require('./config.json');
-const strategy = require('./Auth/Auth0.js').Auth0Strategy;
-let redis = require('./redis.js');
 let session = require('express-session');
 let passport = require('passport');
+let cookieParser = require('cookie-parser');
+
+const config = require('./config.json');
+
+let strategy = require('./Auth/Auth0.js').Auth0Strategy;
+passport.use(strategy);
+
+//The user id (second argument of the done function) is saved in the session
+passport.serializeUser(function (user, done) {
+    done(null, user);
+});
+  
+  passport.deserializeUser(function (user, done) {
+    done(null, user);
+});
+
+let secured = require('./lib/middleware/secured.js');
+var userInViews = require('./lib/middleware/userInViews');
 
 const PORT_HTTP = 8080 || process.env.PORT;
 const PORT_HTTPS = 8443 || process.env.PORT;
 
 //REDIS START
+//let redis = require('./redis.js');
 //redis.createClient(config.redis);
 
 //ROUTES
@@ -25,6 +41,7 @@ var credentials = {key: privateKey, cert: certificate};
 
 //Express block starts here
 const app = express();
+app.use(cookieParser());
 
 if (app.get('env') === 'production') {
     // Use secure cookies in production (requires SSL/TLS)
@@ -37,17 +54,10 @@ if (app.get('env') === 'production') {
 }
 
 app.use(session(config.session));
-passport.use(strategy);
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.serializeUser(function (user, done) {
-    done(null, user);
-});
-  
-  passport.deserializeUser(function (user, done) {
-    done(null, user);
-});
+app.use(userInViews());
 
 app.use("/", homeRouter);
 
@@ -57,6 +67,11 @@ app.use("/admin", (req, res, next) => {
     }    
     next();
 }, adminRouter);
+
+app.get('/user', secured(), function (req, res, next) {
+    const { _raw, _json, ...userProfile } = req.user;
+    res.send('User' + JSON.stringify(userProfile, null, 2));
+});
  
 app.use(function (req, res, next) {
     res.status(404).send("Not Found")

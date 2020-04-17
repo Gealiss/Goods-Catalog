@@ -4,6 +4,7 @@ let passport = require('passport');
 var util = require('util');
 var url = require('url');
 var querystring = require('querystring');
+
 const adminRouter = express.Router();
 
 
@@ -29,7 +30,7 @@ adminRouter.get('/auth', function (req, res, next) {
         if (err) { return next(err); }
         const returnTo = req.session.returnTo;
         delete req.session.returnTo;
-        res.redirect(returnTo || '/');
+        res.redirect(returnTo || '/'); //redirect to previously requested URL or '/..'
       });
     })(req, res, next);
   }
