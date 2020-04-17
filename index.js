@@ -33,6 +33,7 @@ const PORT_HTTPS = 8443 || process.env.PORT;
 //ROUTES
 const homeRouter = require("./Routes/HomeRouter.js");
 const adminRouter = require("./Routes/AdminRouter.js");
+const authRouter = require('./Routes/auth');
 
 //HTTPS requirements
 var privateKey  = fs.readFileSync("./ssl/private.key", 'utf8');
@@ -59,6 +60,7 @@ app.use(passport.session());
 
 app.use(userInViews());
 
+app.use('/', authRouter);
 app.use("/", homeRouter);
 
 app.use("/admin", (req, res, next) => {
