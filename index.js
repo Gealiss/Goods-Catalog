@@ -1,14 +1,16 @@
 const express = require('express');
 const fs = require('fs');
-let http = require('http');
+let path = require('path');
+//let http = require('http');
 let https = require('https');
 let session = require('express-session');
 let passport = require('passport');
 let cookieParser = require('cookie-parser');
 
 const config = require('./config.json');
+let userInViews = require('./lib/middleware/userInViews');
 
-let strategy = require('./Auth/Auth0.js').Auth0Strategy;
+let strategy = require('./auth/auth0.js').Auth0Strategy;
 passport.use(strategy);
 
 //The user id (second argument of the done function) is saved in the session
@@ -20,10 +22,7 @@ passport.serializeUser(function (user, done) {
     done(null, user);
 });
 
-let secured = require('./lib/middleware/secured.js');
-var userInViews = require('./lib/middleware/userInViews');
-
-const PORT_HTTP = 8080 || process.env.PORT;
+//const PORT_HTTP = 8080 || process.env.PORT;
 const PORT_HTTPS = 8443 || process.env.PORT;
 
 //REDIS START
@@ -31,17 +30,23 @@ const PORT_HTTPS = 8443 || process.env.PORT;
 //redis.createClient(config.redis);
 
 //ROUTES
-const homeRouter = require("./Routes/HomeRouter.js");
-const adminRouter = require("./Routes/AdminRouter.js");
-const authRouter = require('./Routes/auth');
+const homeRouter = require("./routes/homeRouter.js");
+const adminRouter = require("./routes/adminRouter.js");
+const userRouter = require("./routes/userRouter.js");
+const authRouter = require('./routes/auth');
 
 //HTTPS requirements
 var privateKey  = fs.readFileSync("./ssl/private.key", 'utf8');
 var certificate = fs.readFileSync("./ssl/mydomain.crt", 'utf8');
 var credentials = {key: privateKey, cert: certificate};
 
-//Express block starts here
+//---Express block starts here---
 const app = express();
+
+// View engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+
 app.use(cookieParser());
 
 if (app.get('env') === 'production') {
@@ -58,36 +63,59 @@ app.use(session(config.session));
 app.use(passport.initialize());
 app.use(passport.session());
 
+//REDIRECT IN CASE OF LISTENING TO HTTP
+/* app.use((req, res, next) => {
+    if(!req.secure) {
+        res.redirect(`https://${req.host}:${PORT_HTTPS}${req.baseUrl}${req.url}`);
+    } else {
+        next();
+    }
+}); */
+
 app.use(userInViews());
 
 app.use('/', authRouter);
-app.use("/", homeRouter);
-
-app.use("/admin", (req, res, next) => {
-    if(!req.secure){
-        req.PORT_HTTPS = PORT_HTTPS;
-    }    
-    next();
-}, adminRouter);
-
-app.get('/user', secured(), function (req, res, next) {
-    const { _raw, _json, ...userProfile } = req.user;
-    res.send('User' + JSON.stringify(userProfile, null, 2));
-});
+app.use('/', homeRouter);
+app.use('/user', userRouter);
+//app.get('/admin', adminRouter);
  
 app.use(function (req, res, next) {
     res.status(404).send("Not Found")
 });
-//Express block ends here
+
+// Error handlers
+console.log(app.get('env'));
+// Development error handler
+// Will print stacktrace
+if (app.get('env') === 'development') {
+    app.use(function (err, req, res, next) {
+      res.status(err.status || 500);
+      res.render('error', {
+        message: err.message,
+        error: err
+      });
+    });
+}
+
+// Production error handler
+// No stacktraces leaked to user
+app.use(function (err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: {}
+    });
+});
 
 
 //LISTENERS BLOCK
-const httpServer = http.createServer(app);
+
+//const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
 
-httpServer.listen(PORT_HTTP, () => {
-    console.log("HTTP server started at: " + `http://localhost:${PORT_HTTP}/`)
-});
+//httpServer.listen(PORT_HTTP, () => {
+//    console.log("HTTP server started at: " + `http://localhost:${PORT_HTTP}/`)
+//});
 httpsServer.listen(PORT_HTTPS, () => {
     console.log("HTTPS server started at: " + `https://localhost:${PORT_HTTPS}/`)
 });
