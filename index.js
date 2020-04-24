@@ -3,24 +3,26 @@ const fs = require('fs');
 let path = require('path');
 //let http = require('http');
 let https = require('https');
-let session = require('express-session');
 let passport = require('passport');
 let cookieParser = require('cookie-parser');
+let bodyParser = require('body-parser');
+
+const jwt = require('jsonwebtoken'); // аутентификация по JWT для hhtp
+const socketioJwt = require('socketio-jwt'); // аутентификация по JWT для socket.io
+const socketIO = require('socket.io');
 
 const config = require('./config.json');
+
 let userInViews = require('./lib/middleware/userInViews');
 
-let strategy = require('./auth/auth0.js').Auth0Strategy;
-passport.use(strategy);
+//db.CreateUser('John', 'JohnGreatLul@mail.com', 'test123');
 
-//The user id (second argument of the done function) is saved in the session
-passport.serializeUser(function (user, done) {
-    done(null, user);
-});
-  
-  passport.deserializeUser(function (user, done) {
-    done(null, user);
-});
+require('./passport');
+
+
+//----------
+
+
 
 //const PORT_HTTP = 8080 || process.env.PORT;
 const PORT_HTTPS = 8443 || process.env.PORT;
@@ -43,11 +45,15 @@ var credentials = {key: privateKey, cert: certificate};
 //---Express block starts here---
 const app = express();
 
+app.use(passport.initialize());
+app.use(bodyParser());
+app.use(cookieParser());
+
 // View engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(cookieParser());
+
 
 if (app.get('env') === 'production') {
     // Use secure cookies in production (requires SSL/TLS)
@@ -58,10 +64,6 @@ if (app.get('env') === 'production') {
     // "Unable to verify authorization request state"
     // app.set('trust proxy', 1);
 }
-
-app.use(session(config.session));
-app.use(passport.initialize());
-app.use(passport.session());
 
 //REDIRECT IN CASE OF LISTENING TO HTTP
 /* app.use((req, res, next) => {
