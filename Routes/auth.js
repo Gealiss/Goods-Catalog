@@ -19,7 +19,7 @@ router.post('/login', async(req, res, next) => {
         //--payload - информация которую мы храним в токене и можем из него получать
         const payload = {
           id: user.id,
-          displayName: user.displayName,
+          role: user.role,
           email: user.email
         };
         req.login(user, {session: false}, (err) => {
@@ -28,7 +28,13 @@ router.post('/login', async(req, res, next) => {
           }
         });
 
-        const token = jwt.sign(payload, config.jwtsecret); //здесь создается JWT
+        const token = jwt.sign(payload, config.jwtsecret, {expiresIn: '1h'}); //здесь создается JWT
+        res.cookie('jwt', token, {
+          secure: true,
+          httpOnly: true,
+          expires: new Date(Date.now() + 1 * 3600 * 1000)
+        });
+        //res.setHeader('Authorization', 'Bearer '+ token); 
         res.json({user, token})
       }
       db.Disconnect();

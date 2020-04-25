@@ -74,7 +74,15 @@ if (app.get('env') === 'production') {
     }
 }); */
 
-app.use(userInViews());
+//app.use(userInViews());
+app.use('/public', express.static('public'));
+
+app.use((req, res, next) => {
+  if(!req.headers["Authorization"] && !req.headers["authorization"]){
+    req.headers["Authorization"] = "Bearer " + req.cookies['jwt'];
+  }
+  next();
+});
 
 app.use('/', authRouter);
 app.use('/', homeRouter);
