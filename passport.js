@@ -37,11 +37,11 @@ const jwtOptions = {
 };
   
 passport.use(new JwtStrategy(jwtOptions, function (payload, done) { //USES NEW INSTANCE CONNECTION
-  console.log("JWT strat payload", payload);
-  db.Connect();
+  //console.log("JWT strat payload", payload);
+  //db.Connect();
 
   User.findById(payload.id, (err, user) => {
-    db.Disconnect();
+    //db.Disconnect();
     if (err) {
       return done(err)
     }
@@ -52,3 +52,11 @@ passport.use(new JwtStrategy(jwtOptions, function (payload, done) { //USES NEW I
     }
   });
 }));
+
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
