@@ -12,8 +12,8 @@ $(document).ready(function() {
             url: "/login",
             contentType: "application/json",
             data: JSON.stringify({"email": email, "password": pass })
-        }).done(function(res){
-                //$("#result").append(res);
+        }).done(function(url){
+            window.location.replace(url);
         });
         return false;
     });

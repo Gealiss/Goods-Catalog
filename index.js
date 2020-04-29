@@ -75,6 +75,12 @@ if (app.get('env') === 'production') {
 
 app.use('/public', express.static('public'));
 
+//port available from req.port
+app.use((req, res, next) => {
+  req.port = PORT_HTTPS;
+  next();
+});
+
 app.use('/', function (req, res, next) {
   //if user have jwt cookie or auth header
   if(req.cookies['jwt'] || req.headers["Authorization"] || req.headers["authorization"]){
@@ -82,11 +88,9 @@ app.use('/', function (req, res, next) {
     if(!req.headers["Authorization"] && !req.headers["authorization"]){ 
       req.headers["authorization"] = "Bearer " + req.cookies['jwt'];
     }
-    
-    db.Connect();
+
     //try to auth user
     passport.authenticate('jwt', {session: false}, (err, user) => {
-      db.Disconnect();
       if (err) {
         console.log(err);
         return next(err);
@@ -95,7 +99,7 @@ app.use('/', function (req, res, next) {
         res.clearCookie('jwt');
         return res.redirect('/login');
       }
-      req.logIn(user, function(err) { //serialize user into req.session, create req.user
+      req.logIn(user, {session: false}, function(err) { //create req.user
         if (err) { return next(err); }
         return next();
       });      
@@ -106,17 +110,6 @@ app.use('/', function (req, res, next) {
     return next();
   }
 });
-
-/* app.use('/', function (req, res, next) {
-  //if user have jwt cookie or auth header
-  if(req.cookies['jwt'] || req.headers["Authorization"] || req.headers["authorization"]){
-    //set auth header if there is no such
-    if(!req.headers["Authorization"] && !req.headers["authorization"]){ 
-      req.headers["authorization"] = "Bearer " + req.cookies['jwt'];
-    }
-  }
-  next();
-}); */
 
 app.use(userInViews());
 

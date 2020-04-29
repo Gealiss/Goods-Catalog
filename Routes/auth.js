@@ -9,12 +9,14 @@ const config = require('../config.json');
 
 //dotenv.config();
 
-router.post('/login', async(req, res, next) => {
-  try {
-    db.Connect();
-    await passport.authenticate('local', { failureRedirect: '../', session: false }, function (err, user) {
+router.post('/login', (req, res, next) => {
+  try {    
+    passport.authenticate('local', { failureRedirect: '../', session: false }, function (err, user) {
+      if (err) {
+        return next(err);
+      }
       if (user == false) {
-        req.user = "Login failed";
+        return next();
       } else {
         //--payload - информация которую мы храним в токене и можем из него получать
         const payload = {
@@ -22,9 +24,9 @@ router.post('/login', async(req, res, next) => {
           role: user.role,
           email: user.email
         };
-        req.login(user, {session: false}, (err) => {
-          if (err) {
-              res.send(err);
+        req.login(user, {session: false}, (_err) => {
+          if (_err) {
+              return next(_err);
           }
         });
 
@@ -32,34 +34,40 @@ router.post('/login', async(req, res, next) => {
         res.cookie('jwt', token, {
           secure: true,
           httpOnly: true,
-          expires: new Date(Date.now() + 1 * 3600 * 1000)
+          expires: new Date(Date.now() + 1 * 3600 * 1000) //1 hour
         });
-        //res.setHeader('Authorization', 'Bearer '+ token); 
-        res.json({user, token})
+        
+        return res.send(`${req.protocol}://${req.host}:${req.port}/`); //send redirect url - home page
       }
-      db.Disconnect();
-    })(req, res);    
+    })(req, res, next);    
   }
   catch (err) {
     console.error(err);
     req.status = 400;
     req.body = err;
+    next(err);
   }
 });
 
 router.post('/register', async(req, res, next) => {
   try {
-    db.Connect();
-    await db.CreateUser(req.body, (doc) => {
-      req.user = doc;
-      res.send(req.user);
-      db.Disconnect();
+    db.Connect()
+    .then(() => {
+      db.CreateUser(req.body, (err, doc) => {
+        db.Disconnect();
+        if(err){
+          return next(err);
+        }
+        req.user = doc;
+        return res.send(req.user);    
+      });
     });
   }
   catch (err) {
     console.error(err);
     req.status = 400;
-    req.body = err;
+    req.body = null;
+    return next(err);
   }
 });
 
