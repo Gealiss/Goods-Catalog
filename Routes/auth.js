@@ -3,6 +3,7 @@ let router = express.Router();
 let dotenv = require('dotenv');
 const jwt = require('jsonwebtoken'); // аутентификация по JWT
 const passport = require('passport');
+const moment = require('moment');
 
 const db = require('../db.js');
 const config = require('../config.json');
@@ -34,9 +35,10 @@ router.post('/login', (req, res, next) => {
         res.cookie('jwt', token, {
           secure: true,
           httpOnly: true,
-          expires: new Date(Date.now() + 1 * 3600 * 1000) //1 hour
+          expires: moment().add(1, 'h').toDate() //1 hour
+          //expires: new Date(Date.now() + 1 * 3600 * 1000) //1 hour
         });
-        
+
         return res.send(`${req.protocol}://${req.host}:${req.port}/`); //send redirect url - home page
       }
     })(req, res, next);    
@@ -49,18 +51,14 @@ router.post('/login', (req, res, next) => {
   }
 });
 
-router.post('/register', async(req, res, next) => {
+router.post('/register', (req, res, next) => {
   try {
-    db.Connect()
-    .then(() => {
-      db.CreateUser(req.body, (err, doc) => {
-        db.Disconnect();
-        if(err){
-          return next(err);
-        }
-        req.user = doc;
-        return res.send(req.user);    
-      });
+    db.CreateUser(req.body, (err, doc) => {
+      if(err){
+        return next(err);
+      }
+      req.user = doc;
+      return res.send(req.user);    
     });
   }
   catch (err) {

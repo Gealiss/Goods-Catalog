@@ -10,12 +10,14 @@ let bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken'); // аутентификация по JWT для hhtp
 const socketioJwt = require('socketio-jwt'); // аутентификация по JWT для socket.io
 const socketIO = require('socket.io');
+//let dotenv = require('dotenv');
+//dotenv.config();
 
 const config = require('./config.json');
 
 let userInViews = require('./lib/middleware/userInViews');
-let secured = require('./lib/middleware/secured');
-const db = require('./db.js');
+let checkRole = require('./lib/middleware/checkRole');
+const User = require('./schemes/user.js');
 
 //db.CreateUser('John', 'JohnGreatLul@mail.com', 'test123');
 
@@ -41,6 +43,7 @@ var privateKey  = fs.readFileSync("./ssl/private.key", 'utf8');
 var certificate = fs.readFileSync("./ssl/mydomain.crt", 'utf8');
 var credentials = {key: privateKey, cert: certificate};
 
+
 //---Express block starts here---
 const app = express();
 
@@ -51,7 +54,6 @@ app.use(cookieParser());
 // View engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-
 
 
 if (app.get('env') === 'production') {
@@ -115,9 +117,8 @@ app.use(userInViews());
 
 app.use('/', authRouter);
 app.use('/', homeRouter);
-app.use('/user', secured(), userRouter);
-
-//app.get('/admin', adminRouter);
+app.use('/user', checkRole(User.Roles.basic), userRouter); //min role - basic (1)
+app.use('/admin', checkRole(User.Roles.admin), adminRouter); //min role - admin (2)
  
 app.use(function (req, res, next) {
     res.status(404).send("Not Found")

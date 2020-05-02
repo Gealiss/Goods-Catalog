@@ -13,19 +13,15 @@ passport.use(new LocalStrategy({
     session: false
   },
   function (email, password, done) {
-    db.Connect()
-    .then(() => {
-      User.findOne({email}, (err, user) => {
-        db.Disconnect()
-        
-        if (err) {
-          return done(err);
-        }      
-        if (!user || !user.checkPassword(password)) {
-          return done(null, false, {message: 'Пользователь не существует, либо пароль неверен.'});
-        }
-        return done(null, user);
-      });
+    User.findOne({email}, (err, user) => {
+      
+      if (err) {
+        return done(err);
+      }      
+      if (!user || !user.checkPassword(password)) {
+        return done(null, false, {message: 'Пользователь не существует, либо пароль неверен.'});
+      }
+      return done(null, user);
     });
   }
 ));
@@ -38,19 +34,15 @@ const jwtOptions = {
 };
   
 passport.use(new JwtStrategy(jwtOptions, function (payload, done) {
-  db.Connect()
-  .then(() => {
-    User.findById(payload.id, (err, user) => {
-      db.Disconnect();
+  User.findById(payload.id, (err, user) => {
 
-      if (err) {
-        return done(err)
-      }
-      if (user) {
-        done(null, user)
-      } else {
-        done(null, false)
-      }
-    });
+    if (err) {
+      return done(err);
+    }
+    if (user) {
+      return done(null, user);
+    } else {
+      return done(null, false);
+    }
   });
 }));
