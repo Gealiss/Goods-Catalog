@@ -19,7 +19,7 @@ passport.use(new LocalStrategy({
         return done(err);
       }      
       if (!user || !user.checkPassword(password)) {
-        return done(null, false, {message: 'Пользователь не существует, либо пароль неверен.'});
+        return done(null, false, {message: 'User does not exist, or password is incorrect.'});
       }
       return done(null, user);
     });

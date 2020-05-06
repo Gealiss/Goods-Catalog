@@ -7,29 +7,44 @@ exports.about = function (req, res) {
     res.send("О сайте, user = " + req.user);
 };
 
-exports.addItem = function (req, res) {
-    let itemCategory = req.body.item_category;
+exports.addSeller = function (req, res) {
+    db.CreateSeller(req.body, (err, seller) => {
+        if(err){
+            return res.send(err);
+        }
+        if(!seller){
+            return res.send("Some error");
+        }
+        res.send(seller);
+    });
+};
 
+exports.addCategory = function (req, res) {
+    db.CreateCategory(req.body, (err, category) => {
+        if(err){
+            return res.send(err);
+        }
+        if(!category){
+            return res.send("Some error");
+        }
+        res.send(category);
+    });
+};
+
+exports.addItem = function (req, res) {
     if(req.body.item_price_history){ //prevent a price history add
         return res.send("Item price history cannot be added, it will be add automatically");
     }
 
-    switch (itemCategory) {
-        case "food":
-            db.CreateItemFood(req.body, (err, item) => {
-                if(err){
-                    return res.send(err);
-                }
-                if(!item){
-                    return res.send("Some error");
-                }
-                res.send(item);
-            });
-            break;
-    
-        default:
-            break;
-    }
+    db.CreateItem(req.body, (err, item) => {
+        if(err){
+            return res.send(err);
+        }
+        if(!item){
+            return res.send("Some error");
+        }
+        res.send(item);
+    });
 };
 
 exports.updateItem = function (req, res) {

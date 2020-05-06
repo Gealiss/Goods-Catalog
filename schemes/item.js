@@ -16,6 +16,8 @@
 
 const mongoose = require('mongoose');
 
+//const Categories = Object.freeze({"food":1, "alcohol":2, "other": 3});
+
 const itemSchema = new mongoose.Schema({
     item_name: {
         type: String,
@@ -38,11 +40,22 @@ const itemSchema = new mongoose.Schema({
                 price: Number
         }]
     },
+    item_category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'category',
+        required: true
+    },
     item_image:{
         type: String,
         required: "Item image is required"
+    },
+    seller:
+    {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'seller',
+        required: true
     }
-}, { collection: 'items_food' });
+}, { collection: 'items' });
 
 itemSchema.methods.HistoryPrice = function(date, price){
     this.item_price_history.push({date: date, price: price});
@@ -50,4 +63,4 @@ itemSchema.methods.HistoryPrice = function(date, price){
     return;
 };
 
-module.exports = mongoose.model('item_food', itemSchema);
+module.exports = mongoose.model('item', itemSchema);
