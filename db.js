@@ -159,22 +159,18 @@ module.exports.GetItemsRange = function (from, to, cb) {
         return cb("No connection", false);
     }
 
-    Item.aggregate(
-        [
-            { $skip: from - 1 },
-            { $limit: to }
-        ]
-    )
-        .exec((err, item) => {
-            if (err) {
-                console.log(err);
-                return cb(err, false);
-            }
-            if (!item) {
-                return cb(null, false);
-            }
-            return cb(null, item);
-        });
+    Item.find({}, null, { skip: from - 1, limit: to })
+    .populate('item_category')
+    .exec((err, items) => {
+        if (err) {
+            console.log(err);
+            return cb(err, false);
+        }
+        if (!items) {
+            return cb(null, false);
+        }
+        return cb(null, items);
+    });
 };
 
 module.exports.CountItems = function (from, to, cb) {

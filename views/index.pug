@@ -1,8 +1,14 @@
 extends layout
 
+include item-mixin.pug
+
 block content
-  .w3-container
-    if locals.user
-      h4 You are logged in!
-    else
-      h4 You are not logged in! Please #[a(href="/login") Log In] to continue.
+  div.row.container-fluid
+    div.col.container-fluid
+      p 
+        | column 1
+    div#items_table.col-9.container-fluid.border.m-1
+      //+item({"_id": "1337", "item_category": "Food", "item_image": "", "item_name": "Test item", "item_description": "test description"})
+  
+  <script src="/public/js/GC.js"></script>
+  

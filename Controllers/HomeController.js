@@ -23,6 +23,9 @@ exports.getItemsRange = function (req, res) {
         to = 20;
     }
 
+    let cols = 6
+    let rows = to / cols;
+
     db.GetItemsRange(from, to, (err, items) => {
         if(err){
             return res.send(err);
@@ -30,6 +33,7 @@ exports.getItemsRange = function (req, res) {
         if(!items){
             return res.send("Some error");
         }
-        res.send(items);
+        //res.write(items);
+        res.render('items-list', { items_list: items, rows: rows, cols: cols });
     });
 };
