@@ -80,6 +80,26 @@ module.exports.CreateSeller = function (req, cb) {
     });
 };
 
+module.exports.GetSellers = function (filter, cb) { //filter: { seller_name: name }
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
+    if(!filter){
+        filter = {};
+    }
+
+    Seller.find(filter, (err, sellers) => {
+        if (err) {
+            console.log(err);
+            return cb(err, false);
+        }
+        if (!sellers) {
+            return cb(null, false);
+        }
+        return cb(null, sellers);
+    });
+};
+
 //CATEGORY
 module.exports.CreateCategory = function (req, cb) {
     if (mongoose.connection.readyState != 1) {
@@ -94,6 +114,26 @@ module.exports.CreateCategory = function (req, cb) {
             return cb(null, false);
         }
         return cb(null, category);
+    });
+};
+
+module.exports.GetCategories = function (filter, cb) { //filter: { category_name: name }
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
+    if(!filter){
+        filter = {};
+    }
+
+    Category.find(filter, (err, categories) => {
+        if (err) {
+            console.log(err);
+            return cb(err, false);
+        }
+        if (!categories) {
+            return cb(null, false);
+        }
+        return cb(null, categories);
     });
 };
 
@@ -154,13 +194,23 @@ module.exports.DeleteItem = function (id, cb) {
     });
 };
 
-module.exports.GetItemsRange = function (from, to, cb) {
+module.exports.GetItems = function (from, to, filter, cb) {
     if (mongoose.connection.readyState != 1) {
         return cb("No connection", false);
     }
 
-    Item.find({}, null, { skip: from - 1, limit: to })
-    .populate('item_category')
+    Item.find(filter.item)
+    .skip(from-1)
+    .limit(to)
+    .populate({
+        path:'item_category',
+        match: filter.category //{ category_name: { $in: ['Food', ...]}
+    })
+    .populate({
+        path:'seller',
+        match: filter.seller //{ seller_name: { $in: ['Altopt', ...]}
+    })
+    .sort(filter.item_sort)
     .exec((err, items) => {
         if (err) {
             console.log(err);
@@ -169,6 +219,12 @@ module.exports.GetItemsRange = function (from, to, cb) {
         if (!items) {
             return cb(null, false);
         }
+        items = items.filter((item) => {
+            return item.seller; //return items where item.seller != null (only populated)
+        })
+        items = items.filter((item) => {
+            return item.item_category; //return items where item.seller != null (only populated)
+        })
         return cb(null, items);
     });
 };

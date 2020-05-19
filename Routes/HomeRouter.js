@@ -6,6 +6,6 @@ homeRouter.get("/", homeController.index);
 homeRouter.get("/about", homeController.about);
 homeRouter.get("/login", homeController.login);
 
-homeRouter.post("/getItemsRange", homeController.getItemsRange);
+homeRouter.post("/getItems", homeController.getItems);
  
 module.exports = homeRouter;

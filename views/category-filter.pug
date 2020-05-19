@@ -1,0 +1,11 @@
+mixin category_filter(categories)
+    div.card
+        div#HeadingCategory.card-header.btn.btn-block(data-toggle="collapse" data-target="#Category" aria-expanded="false" aria-controls="Category")
+            h5.mb-0.text-truncate Category
+        div#Category.collapse(aria-labelledby="HeadingCategory" data-parent="#filter_menu")
+            div.card-body
+                -for(let i = 0; i < categories.length; i++)
+                    -let checkboxID = categories[i].category_name + "Check";
+                    div.form-check
+                        input.form-check-input(id = checkboxID, type="checkbox", value=categories[i].category_name)
+                        label.form-check-label(for = checkboxID)= categories[i].category_name

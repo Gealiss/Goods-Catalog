@@ -1,14 +1,53 @@
 extends layout
 
-include item-mixin.pug
+include seller-filter.pug
+include category-filter.pug
 
 block content
-  div.row.container-fluid
-    div.col.container-fluid
-      p 
-        | column 1
-    div#items_table.col-9.container-fluid.border.m-1
-      //+item({"_id": "1337", "item_category": "Food", "item_image": "", "item_name": "Test item", "item_description": "test description"})
+  div.row.d-flex.justify-content-between.m-3
+
+    div.border.col-md-3
+      h3.text-center
+       u Search filter:
+      div.input-group.mb-3
+        input#SearchInput.form-control(type="search" placeholder="Search" aria-label="Search")
+        div.input-group-append
+          button#SearchButton.btn.btn-outline-secondary(
+            data-toggle="popover" data-trigger="focus" data-placement="right" data-content="Incorrect enter.") Search
+
+      div#filter_menu
+        +seller_filter(sellers)
+        +category_filter(categories)
+        div.card
+          div#HeadingPrice.card-header.btn.btn-block(data-toggle="collapse" data-target="#Price" aria-expanded="false" aria-controls="Price")
+            h5.mb-0.text-truncate Price
+          div#Price.collapse.show(aria-labelledby="HeadingPrice", data-parent="#filter_menu",
+            data-toggle="popover" data-trigger="focus" data-placement="right" data-content="Incorrect enter.")
+
+            div.card-body
+              div.form-row.align-items-center
+                div.col-auto.my-1
+                  label(for="PriceMin") Minimum price:
+                  div.input-group
+                    div.input-group-prepend
+                      div.input-group-text BYN
+                    input#PriceMin.form-control(type="text")
+                div.col-auto.my-1
+                  label(for="PriceMax") Maximum price:
+                  div.input-group
+                    div.input-group-prepend
+                      div.input-group-text BYN
+                    input#PriceMax.form-control(type="text")
+              div.form-row.align-items-center
+                div.col-auto.my-1
+                  label.mr-sm-2(for="PriceSortBy") Sort by:
+                  select#PriceSortBy.custom-select
+                    option(value="", selected) None
+                    option(value="asc") Ascending
+                    option(value="desc") Descending
+        button#ResetFilter.btn.btn-secondary.btn-lg.btn-block Reset filter
+
+    div.border.col-md-9.p-2
+      div#items_table.row.d-flex.justify-content-around
   
-  <script src="/public/js/GC.js"></script>
-  
+  script(src="/public/js/GC.js")

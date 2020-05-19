@@ -3,7 +3,7 @@ mixin item(obj)
         img(src=obj.item_image, alt="no image", onerror="this.onerror=null; this.src='/public/img/default.jpg'"
             style="min-width: 50px; height: auto").card-img-top
         div.card-body
-            h5.card-title= obj.item_name
+            h5.card-title.text-truncate= obj.item_name
             <hr>
             if obj.item_description
                 small.card-text= obj.item_description

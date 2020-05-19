@@ -1,0 +1,11 @@
+mixin seller_filter(sellers)
+    div.card
+        div#HeadingSeller.card-header.btn.btn-block(data-toggle="collapse" data-target="#Seller" aria-expanded="false" aria-controls="Seller")
+            h5.mb-0.text-truncate Seller
+        div#Seller.collapse(aria-labelledby="HeadingSeller" data-parent="#filter_menu")
+            div.card-body
+                -for(let i = 0; i < sellers.length; i++)
+                    -let checkboxID = sellers[i].seller_name + "Check";
+                    div.form-check
+                        input.form-check-input(id = checkboxID, type="checkbox", value=sellers[i].seller_name)
+                        label.form-check-label(for = checkboxID)= sellers[i].seller_name

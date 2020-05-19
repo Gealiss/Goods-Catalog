@@ -1,11 +1,8 @@
 include item-mixin.pug
 
 if items_list
-    - let i = 0
-    - for(rn = 0; rn < rows; rn++)
-        div.card-deck
-            - for(cn = 0; cn < cols; cn++)
-                - if(i < items_list.length)
-                        +item(items_list[i++])
+    - for(i = 0; i < items_list.length; i++)
+        div.col-xl-2.col-lg-3.col-md-4.col-sm-5.d-flex.align-items-stretch
+            +item(items_list[i])
 else
     p No items
