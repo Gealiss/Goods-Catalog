@@ -9,15 +9,18 @@ html
     script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js")  
     script(src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous")
     script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js", integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI", crossorigin="anonymous")
-    script(src="https://d3js.org/d3.v5.min.js")
+    script(type="text/javascript" src="https://www.gstatic.com/charts/loader.js")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js")
+    script(src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js")   
+    script(src="/public/js/login.js") 
 
-  body
-    nav#Navbar.navbar.navbar-expand-lg.navbar-light
-      a.navbar-brand(href="/")
+  body(style="min-width: 400px")
+    nav#Navbar.navbar.navbar-expand-lg.navbar-light.d-flex
+      a.navbar-brand.mr-auto(href="/")
         h1.display-4 Goods Catalog
       if locals.user
-        a(href="/user" id="profileDropDown").w3-bar-item.w3-button Profile
-        a(id="qsLogoutBtn" href="/logout").w3-bar-item.w3-button Log Out
+        a(href="/user", role="button").btn.btn-outline-secondary.mx-2 Profile
+        a(href="/logout", role="button").btn.btn-outline-secondary.mx-2 Log Out
       else
-        a(id="qsLoginBtn" href="/login").w3-bar-item.w3-button Log In
+        button#SignInButton.btn.btn-outline-secondary.mx-2(data-toggle="modal" data-target="#ModalLogin") Sign in
     block content

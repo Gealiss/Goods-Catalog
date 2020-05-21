@@ -7,5 +7,7 @@ homeRouter.get("/about", homeController.about);
 homeRouter.get("/login", homeController.login);
 
 homeRouter.post("/getItems", homeController.getItems);
+homeRouter.post("/getItemByID", homeController.getItemByID);
+homeRouter.post("/getItemsCount", homeController.getItemsCount);
  
 module.exports = homeRouter;

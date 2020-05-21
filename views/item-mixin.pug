@@ -9,9 +9,11 @@ mixin item(obj)
                 small.card-text= obj.item_description
             else
                 small.card-text No description
-        div.card-footer.border-top.border-success
-            if obj.item_price
-                h4.text-success= obj.item_price
-            else
-                h4 Can't get price
+        div.card-footer.border-top.border-success.d-flex.align-items-center
+            div.d-flex.justify-content-between.flex-fill
+                if obj.item_price
+                    h4.text-success.m-auto= obj.item_price
+                else
+                    h4 Can't get price
+                button.showmodal.btn.btn-outline-success.stretched-link.m-auto View
     

@@ -48,7 +48,7 @@ exports.addItem = function (req, res) {
 };
 
 exports.updateItem = function (req, res) {
-    let id = req.body._id;
+    let id = req.body.item_id;
     let toChange = req.body.toChange;
 
     if(!id && !toChange){
@@ -71,7 +71,7 @@ exports.updateItem = function (req, res) {
 };
 
 exports.deleteItem = function (req, res) {
-    let id = req.body._id;
+    let id = req.body.item_id;
 
     if(!id){
         return res.send("Request did not contain item id");

@@ -1,0 +1,18 @@
+mixin modal-login
+    div#ModalLogin.modal.fade(tabindex="-1" role="dialog" aria-labelledby="ModalLoginLabel" aria-hidden="true" style="min-width: 300px")
+        div.modal-dialog.modal-dialog-centered.modal-sm
+            div.modal-content
+                div.d-flex.justify-content-center.modal-header
+                    h5#ModalLoginLabel.modal-title Sign In
+                div.modal-body.p-4
+                    div.form-group
+                        label(for="ModalLoginEmail") Email address:
+                        input#ModalLoginEmail.form-control(type="email", placeholder="email@example.com")
+                    div.form-group
+                        label(for="ModalLoginPass") Password:
+                        input#ModalLoginPass.form-control(type="password", placeholder="Password")
+                    div.d-flex.justify-content-center
+                        b#ModalLoginInfo.text-danger
+                div.modal-footer
+                    button.btn.btn-secondary(type="button", data-dismiss="modal") Close
+                    button#ModalLoginSign.btn.btn-primary(type="button") Sign In

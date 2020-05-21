@@ -1,0 +1,32 @@
+mixin modal-item
+    div#ModalItem.modal.fade(tabindex="-1" role="dialog" aria-labelledby="ModalItemName" aria-hidden="true" style="min-width: 350px")
+        div.modal-dialog.modal-dialog-centered.modal-lg
+            div.modal-content
+                //div.modal-header
+                div.modal-body
+                    div.d-flex.flex-row.my-2
+                        div.col
+                            img#ModalItemImg.rounded.img-fluid.img-thumbnail(
+                                src='', alt="no image", onerror="this.onerror=null; this.src='/public/img/default.jpg'" style="min-width: 50px;")
+                        div.col.d-flex.flex-column
+                            h4#ModalItemName.modal-title test
+                            span#ModalItemCategory.badge.badge-info.align-self-start test
+                            hr
+                            div.d-flex.flex-column.justify-content-between.flex-fill
+                                div#ModalItemDescr test
+                                div.row
+                                    div.col-xl.my-2
+                                        b Seller:
+                                            span#ModalItemSeller test
+                                    div.col-xl.input-group.my-2
+                                        div.input-group-prepend
+                                            span#ModalPriceCurr.input-group-text BYN
+                                        input#ModalItemPrice.form-control.align-self-end(
+                                            aria-label="Sizing example input" aria-describedby="ModalPriceCurr" readonly)
+                    hr
+                    div.container.border
+                        //div#ModalPriceGraph
+                        canvas#ModalPriceGraph
+                div.modal-footer
+                    button.btn.btn-secondary(type="button", data-dismiss="modal") Close
+    

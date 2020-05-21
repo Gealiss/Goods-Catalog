@@ -7,6 +7,8 @@ const Item = require('./schemes/item.js');
 const Seller = require('./schemes/seller.js');
 const Category = require('./schemes/category.js');
 
+const Test = require('./schemes/test.js'); //JUST FOR TESTS
+
 mongoose.Promise = Promise; // Просим Mongoose использовать стандартные Промисы
 mongoose.set('debug', true);  // Просим Mongoose писать все запросы к базе в консоль. Удобно для отладки кода
 
@@ -15,6 +17,17 @@ let conn = mongoose.connection;
 
 conn.on('connected', function () {
     console.log("Mongoose default connection is open", conn);
+
+    //TEST BLOCK
+/*     Test.create({test_name: "test5", test_rating: 1.1}, function (err, t) {
+        if (err) {
+            return console.log(err);
+        }
+        if (!t) {
+            return;
+        }
+        console.log(t);
+    }); */
 });
 
 conn.on('disconnected', function () {
@@ -194,14 +207,35 @@ module.exports.DeleteItem = function (id, cb) {
     });
 };
 
-module.exports.GetItems = function (from, to, filter, cb) {
+module.exports.GetItemByID = function (id, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
+    if(!id){
+        return cb(null, false);
+    }
+
+    Item.findById(id)
+    .populate({path: 'item_category'})
+    .populate({path: 'seller'})
+    .exec((err, item) => {
+        if (err) {
+            console.log(err);
+            return cb(err, false);
+        }
+        if (!item) {
+            return cb(null, false);
+        }
+        return cb(null, item);
+    });
+};
+
+module.exports.GetItems = function (skip, limit, filter, cb) {
     if (mongoose.connection.readyState != 1) {
         return cb("No connection", false);
     }
 
     Item.find(filter.item)
-    .skip(from-1)
-    .limit(to)
     .populate({
         path:'item_category',
         match: filter.category //{ category_name: { $in: ['Food', ...]}
@@ -225,23 +259,41 @@ module.exports.GetItems = function (from, to, filter, cb) {
         items = items.filter((item) => {
             return item.item_category; //return items where item.seller != null (only populated)
         })
-        return cb(null, items);
+
+        let selected_items = items.slice(skip, limit); //check indexes
+
+        return cb(null, selected_items, items.length); //RETURNS ONLY NEEDED RANGE
     });
 };
 
-module.exports.CountItems = function (from, to, cb) {
+module.exports.CountItems = function (filter, cb) {
     if (mongoose.connection.readyState != 1) {
         return cb("No connection", false);
     }
 
-    Item.count({}, function (err, count) {
+    Item.find(filter.item)
+    .populate({
+        path:'item_category',
+        match: filter.category //{ category_name: { $in: ['Food', ...]}
+    })
+    .populate({
+        path:'seller',
+        match: filter.seller //{ seller_name: { $in: ['Altopt', ...]}
+    })
+    .exec((err, items) => {
         if (err) {
             console.log(err);
             return cb(err, false);
         }
-        if (!count) {
+        if (!items) {
             return cb(null, false);
         }
-        return cb(null, count);
-    })
+        items = items.filter((item) => {
+            return item.seller; //return items where item.seller != null (only populated)
+        })
+        items = items.filter((item) => {
+            return item.item_category; //return items where item.seller != null (only populated)
+        })
+        return cb(null, items.length);
+    });
 };

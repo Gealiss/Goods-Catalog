@@ -17,7 +17,7 @@ router.post('/login', (req, res, next) => {
         return next(err);
       }
       if (user == false) {
-        return next();
+        return res.json({ err: 'Incorrect login data.', url: null});
       } else {
         //--payload - информация которую мы храним в токене и можем из него получать
         const payload = {
@@ -39,7 +39,7 @@ router.post('/login', (req, res, next) => {
           //expires: new Date(Date.now() + 1 * 3600 * 1000) //1 hour
         });
 
-        return res.send(`${req.protocol}://${req.host}:${req.port}/`); //send redirect url - home page
+        return res.json({ err: null, url: `${req.protocol}://${req.host}:${req.port}/`}); //send redirect url - home page
       }
     })(req, res, next);    
   }
