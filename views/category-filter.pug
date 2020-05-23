@@ -5,7 +5,7 @@ mixin category_filter(categories)
         div#Category.collapse(aria-labelledby="HeadingCategory" data-parent="#filter_menu")
             div.card-body
                 -for(let i = 0; i < categories.length; i++)
-                    -let checkboxID = categories[i].category_name + "Check";
+                    -let checkboxID = categories[i]._id;
                     div.form-check
                         input.form-check-input(id = checkboxID, type="checkbox", value=categories[i].category_name)
                         label.form-check-label(for = checkboxID)= categories[i].category_name

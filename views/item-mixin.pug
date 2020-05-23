@@ -1,5 +1,5 @@
 mixin item(obj)
-    div.card.bg-light.mb-3.shadow-sm(id=obj._id, class=obj.item_category.category_name)
+    div.card.bg-light.mb-3.shadow-sm
         img(src=obj.item_image, alt="no image", onerror="this.onerror=null; this.src='/public/img/default.jpg'"
             style="min-width: 50px; height: auto").card-img-top
         div.card-body

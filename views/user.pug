@@ -1,11 +1,9 @@
 extends layout
 
 block content
-  .w3-card-4
-    h1 Welcome #{user.email}
+    h1 Welcome #{locals.user.email}
     //--img(src=user.picture)
-    h2 User profile
-    p This is the content of <code>req.user</code>.
-    p Note: <code>_raw</code> and <code>_json</code> properties have been ommited.
-    pre
-      code #{userProfile}
+    if locals.user && locals.user.role == 2
+      h3 Role: Admin
+    p Your ID is: 
+      u #{locals.user._id}

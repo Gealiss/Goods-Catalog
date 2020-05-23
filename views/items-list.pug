@@ -2,7 +2,7 @@ include item-mixin.pug
 
 if items_list
     - for(i = 0; i < items_list.length; i++)
-        div.col-xl-2.col-lg-3.col-md-4.col-sm-5.d-flex.align-items-stretch
+        div.col-xl-2.col-lg-3.col-md-4.col-sm-5.d-flex.align-items-stretch(id=items_list[i]._id).item
             +item(items_list[i])
 else
     p No items

@@ -47,7 +47,7 @@ exports.addItem = function (req, res) {
     });
 };
 
-exports.updateItem = function (req, res) {
+exports.updateItem = function (req, res) {  
     let id = req.body.item_id;
     let toChange = req.body.toChange;
 

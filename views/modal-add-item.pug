@@ -1,0 +1,25 @@
+mixin modal-add-item
+    div#AddItemModal.modal.fade(tabindex="-1" role="dialog" aria-labelledby="AddItemModalLabel" aria-hidden="true" style="min-width: 350px")
+        div.modal-dialog.modal-dialog-centered.modal-md
+            div.modal-content
+                div.d-flex.justify-content-center.modal-header
+                    h5#AddItemModalLabel.modal-title Add item
+                div.modal-body.d-flex.flex-column
+                    b Item name:
+                    input#AddItemModalName.form-control
+                    b Item image link:
+                    input#AddItemModalImgSrc.form-control.my-1
+                    b Item category:
+                    select#AddItemModalCategory.custom-select
+                    b Item seller:
+                    select#AddItemModalSeller.custom-select
+                    b Item price:
+                    div.input-group.my-2
+                        div.input-group-prepend
+                            span#AddItemModalPriceCurr.input-group-text BYN
+                        input#AddItemModalItemPrice.form-control.align-self-end(aria-describedby="AddItemModalPriceCurr")
+                    p Item description:
+                    textarea#AddItemModalDescr.form-control
+                div.modal-footer
+                    button#AddItemModalAddButton.btn.btn-success(type="button").mx-2 Add
+                    button.btn.btn-secondary(type="button", data-dismiss="modal") Close

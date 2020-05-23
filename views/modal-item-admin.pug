@@ -1,0 +1,38 @@
+mixin modal-item-admin
+    div#AdminModalItem.modal.fade(tabindex="-1" role="dialog" aria-labelledby="AdminModalItemName" aria-hidden="true" style="min-width: 350px")
+        div.modal-dialog.modal-dialog-centered.modal-lg
+            div.modal-content
+                //div.modal-header
+                div.modal-body
+                    div.d-flex.flex-row.my-2
+                        div.col
+                            img#AdminModalItemImg.rounded.img-fluid.img-thumbnail(
+                                src='', alt="no image", onerror="this.onerror=null; this.src='/public/img/default.jpg'" style="min-width: 50px;")
+                            input#AdminModalItemImgSrc.form-control.my-1
+                        div.col.d-flex.flex-column
+                            input#AdminModalItemName.form-control
+                            select#AdminModalItemCategory.custom-select
+                            hr
+                            div.d-flex.flex-column.justify-content-between.flex-fill
+                                textarea#AdminModalItemDescr.form-control
+                                div.row
+                                    div.col-xl.my-2
+                                        select#AdminModalItemSeller.custom-select
+                                    div.col-xl.input-group.my-2
+                                        div.input-group-prepend
+                                            span#AdminModalPriceCurr.input-group-text BYN
+                                        input#AdminModalItemPrice.form-control.align-self-end(aria-describedby="AdminModalPriceCurr")
+                    hr
+                    div.container.border
+                        //ModalPriceGraph is bounded
+                        canvas#ModalPriceGraph
+                div.modal-footer
+                    div.d-flex
+                        div.input-group
+                            input#AdminModalDeleteInput.form-control(placeholder="Enter item name"
+                                data-toggle="popover" data-trigger="focus" data-placement="top" data-content="Item name and entered value doesn't match.")
+                            div.input-group-append
+                                button#AdminModalDeleteButton.btn.btn-danger(type="button") Delete
+                        button#AdminModalUpdateButton.btn.btn-warning(type="button").mx-2 Update
+                        button.btn.btn-secondary(type="button", data-dismiss="modal") Close
+    

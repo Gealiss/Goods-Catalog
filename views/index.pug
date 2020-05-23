@@ -3,6 +3,8 @@ extends layout
 include seller-filter.pug
 include category-filter.pug
 include modal-item.pug
+include modal-item-admin.pug
+include modal-add-item.pug
 include modal-login.pug
 
 block content
@@ -49,6 +51,15 @@ block content
                       option(value="asc") Ascending
                       option(value="desc") Descending
           button#ResetFilter.btn.btn-secondary.btn-lg.btn-block Reset filter
+          
+      if locals.user && locals.user.role >= 2
+        div.border.rounded.border-dark.p-2.mt-2
+          h3.text-center
+            u Admin panel:
+          div.dropdown.mx-2
+            button#ItemDropdown.btn.btn-secondary.dropdown-toggle(data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") Item..
+            div.dropdown-menu(aria-labelledby="ItemDropdown")
+              button#AddItemButton.dropdown-item(data-toggle="modal" data-target="#AddItemModal") Add
 
     div.col-md-9.border.rounded.border-dark.p-2.my-2
       div.d-flex.justify-content-center.my-2
@@ -64,8 +75,12 @@ block content
         b#ItemsTotal 12
 
 
-  
-  +modal-item
+  if locals.user && locals.user.role >= 2
+    +modal-item-admin
+    +modal-add-item
+  else
+    +modal-item
+
   +modal-login
   script(src="/public/js/GC.js")
   script(src="/public/js/price_diagram.js")

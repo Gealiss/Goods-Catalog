@@ -5,7 +5,7 @@ mixin seller_filter(sellers)
         div#Seller.collapse(aria-labelledby="HeadingSeller" data-parent="#filter_menu")
             div.card-body
                 -for(let i = 0; i < sellers.length; i++)
-                    -let checkboxID = sellers[i].seller_name + "Check";
+                    -let checkboxID = sellers[i]._id;
                     div.form-check
                         input.form-check-input(id = checkboxID, type="checkbox", value=sellers[i].seller_name)
                         label.form-check-label(for = checkboxID)= sellers[i].seller_name

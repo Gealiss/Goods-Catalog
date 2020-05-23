@@ -8,11 +8,16 @@ let user_filter = {};
 user_filter.skip = skip;
 user_filter.limit = limit;
 
+//TEMP ITEM (MODAL)
+let temp_item;
+
 $(document).ready(function() {
-
-    getItems(skip, limit); //GET ITEMS ON LOAD
-
-    $("#ImgLoad").toggle(false); //HIDE LOAD IMAGE
+    $("#ImgLoad").toggle(true); //SHOW LOAD IMAGE
+    getItems(skip, limit); //GET ITEMS ON LOAD    
+    
+    if($("#AdminModalItem").length){ //IF ADMIN - SETUP MODAL DROPDOWNS
+        setupModalAdmin();
+    }
 
     let myChart = drawChart([
         { x: "2015-07-09", y: 200},
@@ -23,7 +28,9 @@ $(document).ready(function() {
 
     //OPEN ITEM MODAL
     $(document).on('click', '.showmodal', function (event){
-        let item_id = $(this).closest('div.card').attr('id'); //get item id from this div.card
+        let item_id = $(this).closest('div.item').attr('id'); //get item id from this div.card
+
+        //TODO: UPDATE div.card VALUES
 
         $.ajax({
             method: "POST",
@@ -33,16 +40,30 @@ $(document).ready(function() {
         }).done(function(item){
             removeData(myChart);
             addData(myChart, item.item_price_history);
+            temp_item = item;
 
-            $("#ModalItemImg").attr("src", item.item_image);
-            $("#ModalItemName").text(item.item_name);
-            $("#ModalItemCategory").text(item.item_category.category_name);
-            $("#ModalItemDescr").text(item.item_description);
-            $("#ModalItemSeller").text(item.seller.seller_name);
-            $("#ModalItemPrice").val(item.item_price);
+            if($("#AdminModalItem").length){ //IF THERE IS ADMIN MODAL
+                $("#AdminModalItemImg").attr("src", item.item_image);
+                $("#AdminModalItemImgSrc").val(item.item_image);
+                $("#AdminModalItemName").val(item.item_name);
+                $("#AdminModalItemDescr").val(item.item_description);
+                $("#AdminModalItemPrice").val(item.item_price);
+                //SELECT DROPDOWN VALUES
+                $('#AdminModalItemSeller').val(item.seller._id);
+                $('#AdminModalItemCategory').val(item.item_category._id);
+
+                $("#AdminModalItem").modal('show');
+            } else {
+                $("#ModalItemImg").attr("src", item.item_image);
+                $("#ModalItemName").text(item.item_name);
+                $("#ModalItemCategory").text(item.item_category.category_name);
+                $("#ModalItemDescr").text(item.item_description);
+                $("#ModalItemSeller").text(item.seller.seller_name);
+                $("#ModalItemPrice").val(item.item_price);
+
+                $("#ModalItem").modal('show');
+            }
         });
-
-        $("#ModalItem").modal('show');
     });
 
     //FORM SEARCH
@@ -66,6 +87,7 @@ $(document).ready(function() {
 
     //GET NEW ITEMS
     $("#ItemsLoadButton").on('click', () => {
+        //ALTER LOAD RANGE
         let s = user_filter.skip;
         let l = user_filter.limit;
         let c = parseInt($("#ItemsTotal").text());
@@ -73,17 +95,31 @@ $(document).ready(function() {
         if(l + interval > c){
             s = l;
             l = c;
-            $("#ItemsLoadButton").toggle(false);
+            $("#ItemsLoadButton").toggle(false); //DISABLE BUTTON IF ALL ITEMS LOADED
         } else {
             s = l;
             l = l + interval;
         }
-
         user_filter.skip = s;
         user_filter.limit = l;
-        
+
         getItems();
     });
+
+    //ITEM UPDATE (ADMIN MODAL)
+    $("#AdminModalUpdateButton").on('click', () => {
+        updateItem();
+    });
+
+    //ITEM DELETE (ADMIN MODAL)
+    $("#AdminModalDeleteButton").on('click', () => {
+        deleteItem();
+    });
+
+    //ADD ITEM
+/*     $("#AddItemButton").on('click', () => {
+        addItem();
+    }); */
 });
 
 //---------
@@ -103,11 +139,75 @@ function getItems(){ //APPEND NEW ITEMS
         $("#ItemsTotal").text(res.total_count);
 
         if(user_filter.limit >= res.total_count){
+            $("#ItemsCurrRangeTo").text(res.total_count);
             $("#ItemsLoadButton").toggle(false);
         } else {
             $("#ItemsLoadButton").toggle(true);
         }
     });
+}
+
+function updateItem(){
+    let new_seller = $("#AdminModalItemSeller option:selected").val();     //ID
+    let new_category = $("#AdminModalItemCategory option:selected").val(); //ID
+    let new_img = $("#AdminModalItemImgSrc").val();
+    let new_name = $("#AdminModalItemName").val();
+    let new_descr = $("#AdminModalItemDescr").val();
+    let new_price = $("#AdminModalItemPrice").val();
+
+    //UPDATE ONLY CHANGED VALUES
+    let query = {};
+    query.item_id = temp_item._id;
+    query.toChange = {};
+
+    if(temp_item.seller._id != new_seller) { query.toChange.seller = new_seller }
+    if(temp_item.item_category._id != new_category) { query.toChange.item_category = new_category }
+    if(temp_item.item_image != new_img) { query.toChange.item_image = new_img }
+    if(temp_item.item_name != new_name) { query.toChange.item_name = new_name }
+    if(temp_item.item_description != new_descr) { query.toChange.item_description = new_descr }
+    if(temp_item.item_price != new_price) { query.toChange.item_price = new_price }
+
+    if(Object.keys(query.toChange).length === 0){ //IF NOTHING TO CHANGE
+        return;
+    }
+
+    $.ajax({
+        method: "POST",
+        url: "/admin/updateItem",
+        contentType: "application/json",
+        data: JSON.stringify(query)
+    }).done(function(res){
+        $("#AdminModalItem").modal('hide');
+    });
+}
+
+function deleteItem(){
+    let verify_name = $("#AdminModalDeleteInput").val();
+    //ITEM DELETES ONLY IF ENTERED VALUE MATCHES ORIGINAL ITEM NAME
+    if(verify_name != temp_item.item_name){
+        $("#AdminModalDeleteInput").popover('enable');
+        $("#AdminModalDeleteInput").popover('show');
+        return;
+    }
+    $("#AdminModalDeleteInput").popover('hide');
+    $("#AdminModalDeleteInput").popover('disable');
+
+    $.ajax({
+        method: "POST",
+        url: "/admin/deleteItem",
+        contentType: "application/json",
+        data: JSON.stringify({item_id: temp_item._id})
+    }).done(function(res){
+        $("#AdminModalItem").modal('hide');
+        $(`#${temp_item._id}`).remove(); //REMOVE ITEM CARD
+        let count = parseInt($("#ItemsTotal").text()); //GET ITEMS COUNT
+        $("#ItemsTotal").text(count-1); //SET NEW ITEMS COUNT LESS BY 1
+    });
+}
+
+function addItem(){
+
+    $("#AdminModalItem").modal('hide');
 }
 
 function getFilterInfo(){
@@ -172,4 +272,28 @@ function getFilterInfo(){
     if(sort){
         user_filter.item_sort.item_price = sort;
     }
+}
+
+function setupModalAdmin(){ //SETUP ADMIN MODAL DROPDOWNS
+    let sellers = [];
+    ($("#Seller input").toArray()).forEach(seller => { //GET ALL SELLERS FROM PAGE
+        sellers.push({value: seller.id, text: seller.value});
+    });
+    let categories = [];
+    ($("#Category input").toArray()).forEach(category => { //GET ALL SELLERS FROM PAGE
+        categories.push({value: category.id, text: category.value});
+    });
+
+    $.each(sellers, (i, s) => {
+        $('#AdminModalItemSeller').append($('<option>', { 
+            value: s.value,
+            text : s.text 
+        }));
+    });
+    $.each(categories, (i, c) => {
+        $('#AdminModalItemCategory').append($('<option>', { 
+            value: c.value,
+            text : c.text 
+        }));
+    });
 }

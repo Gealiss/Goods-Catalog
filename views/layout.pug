@@ -18,9 +18,11 @@ html
     nav#Navbar.navbar.navbar-expand-lg.navbar-light.d-flex
       a.navbar-brand.mr-auto(href="/")
         h1.display-4 Goods Catalog
+
       if locals.user
         a(href="/user", role="button").btn.btn-outline-secondary.mx-2 Profile
         a(href="/logout", role="button").btn.btn-outline-secondary.mx-2 Log Out
       else
         button#SignInButton.btn.btn-outline-secondary.mx-2(data-toggle="modal" data-target="#ModalLogin") Sign in
+
     block content
