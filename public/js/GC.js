@@ -1,25 +1,31 @@
 //DEFAULT ITEM LOAD RANGE
 const skip = 0;
-const limit = 4; //ITEMS TO LOAD
-const interval = 4; //NEW ITEMS TO LOAD
+const limit = 12; //ITEMS TO LOAD
+const interval = 10; //NEW ITEMS TO LOAD
 
 //DEFAULT USER FILTER
 let user_filter = {};
 user_filter.skip = skip;
 user_filter.limit = limit;
 
-//TEMP ITEM (MODAL)
+//CHART
+let myChart;
+
+//TEMP ITEM (MODAL), LAST OPENED ITEM
 let temp_item;
 
 $(document).ready(function() {
     $("#ImgLoad").toggle(true); //SHOW LOAD IMAGE
     getItems(skip, limit); //GET ITEMS ON LOAD    
     
-    if($("#AdminModalItem").length){ //IF ADMIN - SETUP MODAL DROPDOWNS
+    if($("#AdminModalItem").length){    //IF ADMIN - SETUP MODAL DROPDOWNS
         setupModalAdmin();
     }
+    if($("#AddItemModal").length){      //IF ADMIN - SETUP MODAL DROPDOWNS
+        setupAddItemModal();
+    }
 
-    let myChart = drawChart([
+    myChart = drawChart([
         { x: "2015-07-09", y: 200},
         { x: "2016-01-17", y: 500},
         { x: "2018-11-18", y: 700},
@@ -116,10 +122,15 @@ $(document).ready(function() {
         deleteItem();
     });
 
-    //ADD ITEM
+    //OPEN ADD ITEM MODAL
 /*     $("#AddItemButton").on('click', () => {
-        addItem();
+        $("#AddItemModal").modal('show');
     }); */
+
+    //ADD ITEM
+    $("#AddItemModalAddButton").on('click', () => {
+        addItem();
+    });
 });
 
 //---------
@@ -205,9 +216,51 @@ function deleteItem(){
     });
 }
 
+//ADD NEW ITEM
 function addItem(){
+    let new_seller = $("#AddItemModalSeller option:selected").val();     //ID
+    let new_category = $("#AddItemModalCategory option:selected").val(); //ID
+    let new_img = $("#AddItemModalImgSrc").val();
+    let new_name = $("#AddItemModalName").val();
+    let new_descr = $("#AddItemModalDescr").val(); //not required
+    let new_price = $("#AddItemModalItemPrice").val();
 
-    $("#AdminModalItem").modal('hide');
+    let query = {};
+
+    //THIS FIELDS IS REQUIRED
+    if(!new_seller) { return; }
+    if(!new_category) { return; }
+    if(!new_img) { return; }
+    if(!new_name) { return; }
+    if(!new_price) { return; }
+
+    //BASIC VALIDATION
+    if(new_name.length < 3 && new_name.length > 30) { return; }
+    if(new_descr.length > 500) { return; }
+    if(new_price < 0.01 && new_price > 1000000) { return; }
+
+    query.seller = new_seller;
+    query.item_category = new_category;
+    query.item_image = new_img;
+    query.item_name = new_name;
+    query.item_price = new_price;
+    if(new_descr){
+        query.item_description = new_descr;
+    }
+
+    $.ajax({
+        method: "POST",
+        url: "/admin/addItem",
+        contentType: "application/json",
+        data: JSON.stringify(query)
+    }).done(function(res){
+        if(res.error){
+            alert(res.error.message);
+        } else if(res.item == false) {
+            alert("There is some error occurred.")
+        }
+        $("#AddItemModal").modal('hide');
+    });
 }
 
 function getFilterInfo(){
@@ -292,6 +345,30 @@ function setupModalAdmin(){ //SETUP ADMIN MODAL DROPDOWNS
     });
     $.each(categories, (i, c) => {
         $('#AdminModalItemCategory').append($('<option>', { 
+            value: c.value,
+            text : c.text 
+        }));
+    });
+}
+
+function setupAddItemModal(){ //SETUP ADD ITEM MODAL DROPDOWNS
+    let sellers = [];
+    ($("#Seller input").toArray()).forEach(seller => { //GET ALL SELLERS FROM PAGE
+        sellers.push({value: seller.id, text: seller.value});
+    });
+    let categories = [];
+    ($("#Category input").toArray()).forEach(category => { //GET ALL SELLERS FROM PAGE
+        categories.push({value: category.id, text: category.value});
+    });
+
+    $.each(sellers, (i, s) => {
+        $('#AddItemModalSeller').append($('<option>', { 
+            value: s.value,
+            text : s.text 
+        }));
+    });
+    $.each(categories, (i, c) => {
+        $('#AddItemModalCategory').append($('<option>', { 
             value: c.value,
             text : c.text 
         }));

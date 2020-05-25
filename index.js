@@ -9,7 +9,8 @@ let bodyParser = require('body-parser');
 
 const jwt = require('jsonwebtoken'); // аутентификация по JWT для hhtp
 const socketioJwt = require('socketio-jwt'); // аутентификация по JWT для socket.io
-const socketIO = require('socket.io');
+//const io = require('socket.io')(server);
+const WebSocket = require('ws');
 //let dotenv = require('dotenv');
 //dotenv.config();
 
@@ -19,14 +20,13 @@ let userInViews = require('./lib/middleware/userInViews');
 let checkRole = require('./lib/middleware/checkRole');
 const User = require('./schemes/user.js');
 
-//db.CreateUser('John', 'JohnGreatLul@mail.com', 'test123');
-
 require('./passport');
 
 //----------
 
 //const PORT_HTTP = 8080 || process.env.PORT;
 const PORT_HTTPS = 8443 || process.env.PORT;
+const PORT_WS = 80 || process.env.PORT;
 
 //REDIS START
 //let redis = require('./redis.js');
@@ -148,11 +148,41 @@ app.use(function (err, req, res, next) {
     });
 });
 
+/* io.on('connection', (socket) => {
+  socket.emit('news', { hello: 'world' });
+  socket.on('request', (data) => {
+    console.log(data);
+  });
+}); */
+
+//DB EVENT EMITTER
+const emitter = require('./db').emitter;
+let eventName = "priceChange";
 
 //LISTENERS BLOCK
-
 //const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
+
+//WEBSOCKET
+const wss = new WebSocket.Server({port: PORT_WS});
+
+wss.on('connection', function connection(ws) {
+  ws.on('message', function incoming(message) {
+    console.log('received: %s', message);
+  });
+
+  emitter.on(eventName, (data) => {
+    let obj = {};
+    let price_history = [];
+    data.price_history.forEach(elem => {
+      price_history.push({date: elem.date, price: elem.price});
+    });
+    obj.item_id = data.item_id;
+    obj.price_history = price_history;
+    ws.send(JSON.stringify(obj));
+  });
+  //ws.send('something');
+});
 
 //httpServer.listen(PORT_HTTP, () => {
 //    console.log("HTTP server started at: " + `http://localhost:${PORT_HTTP}/`)

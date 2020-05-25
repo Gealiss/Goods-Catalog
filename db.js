@@ -169,6 +169,13 @@ module.exports.CreateItem = function (req, cb) {
     });
 };
 
+const Emitter = require("events");
+
+let emitter = new Emitter();
+let eventName = "priceChange";
+
+module.exports.emitter = emitter;
+
 module.exports.UpdateItem = function (id, toChange, cb) {
     if (mongoose.connection.readyState != 1) {
         return cb("No connection", false);
@@ -184,6 +191,7 @@ module.exports.UpdateItem = function (id, toChange, cb) {
         }
         if (toChange && toChange.item_price) {
             item.HistoryPrice(Date.now(), toChange.item_price); //add price to history
+            emitter.emit(eventName, {item_id: item._id, price_history: item.item_price_history}); //Emit an event for ws
         }
 
         return cb(null, item);

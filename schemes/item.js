@@ -32,7 +32,8 @@ const itemSchema = new mongoose.Schema({
     item_price: {
         type: Number,
         required: 'Item price is required',
-        min: 0.01
+        min: 0.01,
+        max: 1000000
     },
     item_price_history: {
         type: [{
@@ -47,7 +48,8 @@ const itemSchema = new mongoose.Schema({
     },
     item_image:{
         type: String,
-        required: "Item image is required"
+        required: "Item image is required",
+        maxlength: 500
     },
     seller:
     {

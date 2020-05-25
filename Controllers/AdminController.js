@@ -38,10 +38,10 @@ exports.addItem = function (req, res) {
 
     db.CreateItem(req.body, (err, item) => {
         if(err){
-            return res.send(err);
+            return res.json({error: err, item: item});
         }
         if(!item){
-            return res.send("Some error");
+            return res.json({error: err, item: item});
         }
         res.send(item);
     });
