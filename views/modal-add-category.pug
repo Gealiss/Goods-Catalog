@@ -1,0 +1,14 @@
+mixin modal-add-category
+    div#AddCategoryModal.modal.fade(tabindex="-1" role="dialog" aria-labelledby="AddCategoryModalLabel" aria-hidden="true" style="min-width: 350px")
+        div.modal-dialog.modal-dialog-centered.modal-md
+            div.modal-content
+                div.d-flex.justify-content-center.modal-header
+                    h5#AddCategoryModalLabel.modal-title Add category
+                div.modal-body.d-flex.flex-column
+                    b Category name:
+                    input#AddCategoryModalName.form-control
+                    p Category description:
+                    textarea#AddCategoryModalDescr.form-control
+                div.modal-footer
+                    button#AddCategoryModalAddButton.btn.btn-success(type="button").mx-2 Add
+                    button.btn.btn-secondary(type="button", data-dismiss="modal") Close

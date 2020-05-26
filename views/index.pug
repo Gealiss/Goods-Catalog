@@ -2,9 +2,15 @@ extends layout
 
 include seller-filter.pug
 include category-filter.pug
+
 include modal-item.pug
 include modal-item-admin.pug
 include modal-add-item.pug
+include modal-add-category.pug
+include modal-ud-category.pug
+include modal-add-seller.pug
+include modal-ud-seller.pug
+
 include modal-login.pug
 
 block content
@@ -56,10 +62,24 @@ block content
         div.border.rounded.border-dark.p-2.mt-2
           h3.text-center
             u Admin panel:
-          div.dropdown.mx-2
-            button#ItemDropdown.btn.btn-secondary.dropdown-toggle(data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") Item..
-            div.dropdown-menu(aria-labelledby="ItemDropdown")
-              button#AddItemButton.dropdown-item(data-toggle="modal" data-target="#AddItemModal") Add
+          div.container-fluid
+            div.dropdown.m-2
+              button#ItemDropdown.btn.btn-secondary.dropdown-toggle(data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") Item..
+              div.dropdown-menu(aria-labelledby="ItemDropdown")
+                button#AddItemButton.dropdown-item(data-toggle="modal" data-target="#AddItemModal") Add
+            
+            div.dropdown.m-2
+              button#CategoryDropdown.btn.btn-secondary.dropdown-toggle(data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") Category..
+              div.dropdown-menu(aria-labelledby="CategoryDropdown")
+                button#AddCategoryButton.dropdown-item(data-toggle="modal" data-target="#AddCategoryModal") Add
+                button#UDCategoryButton.dropdown-item(data-toggle="modal" data-target="#UDCategoryModal") Update/Delete
+            
+            div.dropdown.m-2
+              button#SellerDropdown.btn.btn-secondary.dropdown-toggle(data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") Seller..
+              div.dropdown-menu(aria-labelledby="SellerDropdown")
+                button#AddSellerButton.dropdown-item(data-toggle="modal" data-target="#AddSellerModal") Add
+                button#UDSellerButton.dropdown-item(data-toggle="modal" data-target="#UDSellerModal") Update/Delete
+                       
 
     div.col-md-9.border.rounded.border-dark.p-2.my-2
       div.d-flex.justify-content-center.my-2
@@ -78,6 +98,10 @@ block content
   if locals.user && locals.user.role >= 2
     +modal-item-admin
     +modal-add-item
+    +modal-add-category
+    +modal-ud-category
+    +modal-add-seller
+    +modal-ud-seller
   else
     +modal-item
 

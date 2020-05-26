@@ -8,8 +8,7 @@ let cookieParser = require('cookie-parser');
 let bodyParser = require('body-parser');
 
 const jwt = require('jsonwebtoken'); // аутентификация по JWT для hhtp
-const socketioJwt = require('socketio-jwt'); // аутентификация по JWT для socket.io
-//const io = require('socket.io')(server);
+//const socketioJwt = require('socketio-jwt'); // аутентификация по JWT для socket.io
 const WebSocket = require('ws');
 //let dotenv = require('dotenv');
 //dotenv.config();
@@ -35,6 +34,7 @@ const PORT_WS = 80 || process.env.PORT;
 //ROUTES
 const homeRouter = require("./routes/homeRouter.js");
 const adminRouter = require("./routes/adminRouter.js");
+const ownerRouter = require("./routes/ownerRouter.js");
 const userRouter = require("./routes/userRouter.js");
 const authRouter = require('./routes/auth');
 
@@ -46,6 +46,7 @@ var credentials = {key: privateKey, cert: certificate};
 
 //---Express block starts here---
 const app = express();
+app.set("env", "production");
 
 app.use(passport.initialize());
 app.use(bodyParser());
@@ -99,7 +100,7 @@ app.use('/', function (req, res, next) {
       }
       if(!user){
         res.clearCookie('jwt');
-        return res.redirect('/login');
+        return res.redirect('/');
       }
       req.logIn(user, {session: false}, function(err) { //create req.user
         if (err) { return next(err); }
@@ -119,6 +120,7 @@ app.use('/', authRouter);
 app.use('/', homeRouter);
 app.use('/user', checkRole(User.Roles.basic), userRouter); //min role - basic (1)
 app.use('/admin', checkRole(User.Roles.admin), adminRouter); //min role - admin (2)
+app.use('/owner', checkRole(User.Roles.owner), ownerRouter); //min role - owner (3)
  
 app.use(function (req, res, next) {
     res.status(404).send("Not Found")
@@ -147,13 +149,6 @@ app.use(function (err, req, res, next) {
       error: {}
     });
 });
-
-/* io.on('connection', (socket) => {
-  socket.emit('news', { hello: 'world' });
-  socket.on('request', (data) => {
-    console.log(data);
-  });
-}); */
 
 //DB EVENT EMITTER
 const emitter = require('./db').emitter;

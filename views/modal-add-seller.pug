@@ -1,0 +1,16 @@
+mixin modal-add-seller
+    div#AddSellerModal.modal.fade(tabindex="-1" role="dialog" aria-labelledby="AddSellerModalLabel" aria-hidden="true" style="min-width: 350px")
+        div.modal-dialog.modal-dialog-centered.modal-md
+            div.modal-content
+                div.d-flex.justify-content-center.modal-header
+                    h5#AddSellerModalLabel.modal-title Add category
+                div.modal-body.d-flex.flex-column
+                    b Seller name:
+                    input#AddSellerModalName.form-control
+                    p Seller image:
+                    input#AddSellerModalImg.form-control
+                    p Seller description:
+                    textarea#AddSellerModalDescr.form-control
+                div.modal-footer
+                    button#AddSellerModalAddButton.btn.btn-success(type="button").mx-2 Add
+                    button.btn.btn-secondary(type="button", data-dismiss="modal") Close

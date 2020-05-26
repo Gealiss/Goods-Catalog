@@ -1,14 +1,11 @@
 let express = require('express');
 let router = express.Router();
-let dotenv = require('dotenv');
 const jwt = require('jsonwebtoken'); // аутентификация по JWT
 const passport = require('passport');
 const moment = require('moment');
 
 const db = require('../db.js');
 const config = require('../config.json');
-
-//dotenv.config();
 
 router.post('/login', (req, res, next) => {
   try {    

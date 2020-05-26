@@ -1,0 +1,22 @@
+mixin modal-ud-category
+    div#UDCategoryModal.modal.fade(tabindex="-1" role="dialog" aria-labelledby="UDCategoryModalLabel" aria-hidden="true" style="min-width: 350px")
+        div.modal-dialog.modal-dialog-centered.modal-md
+            div.modal-content
+                div.d-flex.justify-content-center.modal-header
+                    h5#UDCategoryModalLabel.modal-title Update category
+                div.modal-body.d-flex.flex-column
+                    b Item category:
+                    select#UDCategoryModalCategory.custom-select
+                    b Category name:
+                    input#UDCategoryModalName.form-control
+                    p Category description:
+                    textarea#UDCategoryModalDescr.form-control
+                div.modal-footer
+                    div.d-flex
+                        div.input-group
+                            input#UDCategoryModalDeleteInput.form-control(placeholder="Enter category name"
+                                data-toggle="popover" data-trigger="focus" data-placement="top" data-content="Category name and entered value doesn't match.")
+                            div.input-group-append
+                                button#UDCategoryModalDeleteButton.btn.btn-danger(type="button") Delete
+                        button#UDCategoryModalUpdateButton.btn.btn-warning(type="button").mx-2 Update
+                        button.btn.btn-secondary(type="button", data-dismiss="modal") Close

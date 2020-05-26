@@ -65,14 +65,68 @@ module.exports.CreateUser = function (req, cb) {
     if (mongoose.connection.readyState != 1) {
         return cb("No connection", false);
     }
-    User.create(req, function (err, doc) {
+    User.create(req, function (err, user) {
         if (err) {
             console.log(err);
             return cb(err, false);
         }
-        _doc = doc;
-        console.log("Сохранен объект user", doc);
-        return cb(null, doc);
+        if (!user) {
+            return cb(null, false);
+        }
+        return cb(null, user);
+    });
+};
+
+module.exports.UpdateUser = function (id, toChange, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
+    User.findByIdAndUpdate(id, toChange, function (err, user) {
+        if (err) {
+            console.log(err);
+            return cb(err, false);
+        }
+        if (!user) {
+            return cb(null, false);
+        }
+        return cb(null, user);
+    });
+};
+
+module.exports.DeleteUser = function (id, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
+
+    User.findByIdAndDelete(id, (err, user) => {
+        if (err) {
+            console.log(err);
+            return cb(err, false);
+        }
+        if (!user) {
+            return cb(null, false);
+        }
+        return cb(null, user);
+    });
+};
+
+module.exports.GetUsers = function (filter, cb) { //filter: { user_email: email }
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
+    if(!filter){
+        filter = {};
+    }
+
+    User.find(filter, (err, users) => {
+        if (err) {
+            console.log(err);
+            return cb(err, false);
+        }
+        if (!users) {
+            return cb(null, false);
+        }
+        return cb(null, users);
     });
 };
 
@@ -82,6 +136,39 @@ module.exports.CreateSeller = function (req, cb) {
         return cb("No connection", false);
     }
     Seller.create(req, function (err, seller) {
+        if (err) {
+            console.log(err);
+            return cb(err, false);
+        }
+        if (!seller) {
+            return cb(null, false);
+        }
+        return cb(null, seller);
+    });
+};
+
+module.exports.UpdateSeller = function (id, toChange, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
+    Seller.findByIdAndUpdate(id, toChange, function (err, seller) {
+        if (err) {
+            console.log(err);
+            return cb(err, false);
+        }
+        if (!seller) {
+            return cb(null, false);
+        }
+        return cb(null, seller);
+    });
+};
+
+module.exports.DeleteSeller = function (id, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
+
+    Seller.findByIdAndDelete(id, (err, seller) => {
         if (err) {
             console.log(err);
             return cb(err, false);
@@ -119,6 +206,39 @@ module.exports.CreateCategory = function (req, cb) {
         return cb("No connection", false);
     }
     Category.create(req, function (err, category) {
+        if (err) {
+            console.log(err);
+            return cb(err, false);
+        }
+        if (!category) {
+            return cb(null, false);
+        }
+        return cb(null, category);
+    });
+};
+
+module.exports.UpdateCategory = function (id, toChange, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
+    Category.findByIdAndUpdate(id, toChange, function (err, category) {
+        if (err) {
+            console.log(err);
+            return cb(err, false);
+        }
+        if (!category) {
+            return cb(null, false);
+        }
+        return cb(null, category);
+    });
+};
+
+module.exports.DeleteCategory = function (id, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
+
+    Category.findByIdAndDelete(id, (err, category) => {
         if (err) {
             console.log(err);
             return cb(err, false);

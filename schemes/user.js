@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto'); // модуль node.js для выполнения различных шифровальных операций, в т.ч. для создания хэшей.
 
-const Roles = Object.freeze({"basic":1, "admin":2});
+const Roles = Object.freeze({"basic":1, "admin":2, "owner":3});
 
 const userSchema = new mongoose.Schema({
     displayName: String,
@@ -12,7 +12,8 @@ const userSchema = new mongoose.Schema({
     },
     role: {
       type: Number,
-      default: Roles.basic
+      default: Roles.basic,
+      required: true
     },
     passwordHash: String,
     salt: String,

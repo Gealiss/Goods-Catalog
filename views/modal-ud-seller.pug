@@ -1,0 +1,24 @@
+mixin modal-ud-seller
+    div#UDSellerModal.modal.fade(tabindex="-1" role="dialog" aria-labelledby="UDSellerModalLabel" aria-hidden="true" style="min-width: 350px")
+        div.modal-dialog.modal-dialog-centered.modal-md
+            div.modal-content
+                div.d-flex.justify-content-center.modal-header
+                    h5#UDSellerModalLabel.modal-title Update seller
+                div.modal-body.d-flex.flex-column
+                    b Seller:
+                    select#UDSellerModalSeller.custom-select
+                    b New seller name:
+                    input#UDSellerModalName.form-control
+                    //p New seller image:
+                    //input#UDSellerModalImg.form-control
+                    p New seller description:
+                    textarea#UDSellerModalDescr.form-control
+                div.modal-footer
+                    div.d-flex
+                        div.input-group
+                            input#UDSellerModalDeleteInput.form-control(placeholder="Enter seller name"
+                                data-toggle="popover" data-trigger="focus" data-placement="top" data-content="Seller name and entered value doesn't match.")
+                            div.input-group-append
+                                button#UDSellerModalDeleteButton.btn.btn-danger(type="button") Delete
+                        button#UDSellerModalUpdateButton.btn.btn-warning(type="button").mx-2 Update
+                        button.btn.btn-secondary(type="button", data-dismiss="modal") Close

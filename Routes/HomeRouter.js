@@ -4,7 +4,6 @@ const homeRouter = express.Router();
 
 homeRouter.get("/", homeController.index);
 homeRouter.get("/about", homeController.about);
-homeRouter.get("/login", homeController.login);
 
 homeRouter.post("/getItems", homeController.getItems);
 homeRouter.post("/getItemByID", homeController.getItemByID);

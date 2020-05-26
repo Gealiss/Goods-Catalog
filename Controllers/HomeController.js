@@ -24,11 +24,7 @@ exports.index = function (req, res) {
 };
 
 exports.about = function (req, res) {
-    res.send("О сайте");
-};
-
-exports.login = function (req, res) {
-    res.render('test'), {title: 'Test login'};
+    res.send("Course project: Goods Catalog. 2020 y.");
 };
 
 exports.getItems = function (req, res) {

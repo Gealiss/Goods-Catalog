@@ -14,15 +14,24 @@ let myChart;
 //TEMP ITEM (MODAL), LAST OPENED ITEM
 let temp_item;
 
+let categories;
+
 $(document).ready(function() {
     $("#ImgLoad").toggle(true); //SHOW LOAD IMAGE
     getItems(skip, limit); //GET ITEMS ON LOAD    
     
-    if($("#AdminModalItem").length){    //IF ADMIN - SETUP MODAL DROPDOWNS
+    //IF ADMIN - SETUP MODAL DROPDOWNS
+    if($("#AdminModalItem").length){
         setupModalAdmin();
     }
-    if($("#AddItemModal").length){      //IF ADMIN - SETUP MODAL DROPDOWNS
+    if($("#AddItemModal").length){
         setupAddItemModal();
+    }
+    if($("#UDCategoryModal").length){
+        setupUDCategoryModal();
+    }
+    if($("#UDSellerModal").length){
+        setupUDSellerModal();
     }
 
     myChart = drawChart([
@@ -122,14 +131,53 @@ $(document).ready(function() {
         deleteItem();
     });
 
-    //OPEN ADD ITEM MODAL
-/*     $("#AddItemButton").on('click', () => {
-        $("#AddItemModal").modal('show');
-    }); */
-
     //ADD ITEM
     $("#AddItemModalAddButton").on('click', () => {
         addItem();
+    });
+
+    //ADD CATEGORY
+    $("#AddCategoryModalAddButton").on('click', () => {
+        addCategory();
+    });
+
+    //UPDATE CATEGORY
+    //ON CHANGE SELECTED
+    $('#UDCategoryModalCategory').on('change', function (e) {
+        var optionSelected = $("option:selected", this);
+        $("#UDCategoryModalName").val(optionSelected[0].text);
+        $("#UDCategoryModalDescr").val(optionSelected[0].dataset.descr);
+    });
+    //UPDATE
+    $('#UDCategoryModalUpdateButton').on('click', () => {
+        updateCategory();
+    });
+
+    //DELETE CATEGORY
+    $('#UDCategoryModalDeleteButton').on('click', () => {
+        deleteCategory();
+    });
+
+    //ADD SELLER
+    $("#AddSellerModalAddButton").on('click', () => {
+        addSeller();
+    });
+
+    //UPDATE SELLER
+    //ON CHANGE SELECTED
+    $('#UDSellerModalSeller').on('change', function (e) {
+        var optionSelected = $("option:selected", this);
+        $("#UDSellerModalName").val(optionSelected[0].text);
+        $("#UDSellerModalDescr").val(optionSelected[0].dataset.descr);
+    });
+    //UPDATE
+    $("#UDSellerModalUpdateButton").on('click', () => {
+        updateSeller();
+    });
+    
+    //DELETE SELLER
+    $("#UDSellerModalDeleteButton").on('click', () => {
+        deleteSeller();
     });
 });
 
@@ -158,6 +206,7 @@ function getItems(){ //APPEND NEW ITEMS
     });
 }
 
+//UPDATE ITEM
 function updateItem(){
     let new_seller = $("#AdminModalItemSeller option:selected").val();     //ID
     let new_category = $("#AdminModalItemCategory option:selected").val(); //ID
@@ -192,6 +241,7 @@ function updateItem(){
     });
 }
 
+//DELETE ITEM
 function deleteItem(){
     let verify_name = $("#AdminModalDeleteInput").val();
     //ITEM DELETES ONLY IF ENTERED VALUE MATCHES ORIGINAL ITEM NAME
@@ -234,11 +284,6 @@ function addItem(){
     if(!new_name) { return; }
     if(!new_price) { return; }
 
-    //BASIC VALIDATION
-    if(new_name.length < 3 && new_name.length > 30) { return; }
-    if(new_descr.length > 500) { return; }
-    if(new_price < 0.01 && new_price > 1000000) { return; }
-
     query.seller = new_seller;
     query.item_category = new_category;
     query.item_image = new_img;
@@ -260,6 +305,182 @@ function addItem(){
             alert("There is some error occurred.")
         }
         $("#AddItemModal").modal('hide');
+    });
+}
+
+//ADD NEW CATEGORY
+function addCategory(){
+    let new_category = $("#AddCategoryModalName").val();
+    let new_descr = $("#AddCategoryModalDescr").val();
+    let query = {};
+    if(!new_category) { alert("Enter category name"); return; }
+
+    if(new_descr){ query.category_description = new_descr };
+    query.category_name = new_category;
+
+    $.ajax({
+        method: "POST",
+        url: "/admin/addCategory",
+        contentType: "application/json",
+        data: JSON.stringify(query)
+    }).done(function(res){
+        if(res.error){
+            alert(res.error.message);
+        } else if(res.category == false) {
+            alert("There is some error occurred.")
+        }
+        $("#AddCategoryModal").modal('hide');
+    });
+}
+
+//UPDATE CATEGORY
+function updateCategory(){
+    let category = $("#UDCategoryModalCategory option:selected").val(); //ID
+    let category_name = $("#UDCategoryModalName").val();
+    let category_description = $("#UDCategoryModalDescr").val();
+    let query = {};
+    query.toChange = {};
+
+    if(!category_name) { alert("Enter category name"); return; }
+
+    query.category_id = category;
+    query.toChange.category_name = category_name;
+    if(category_description){ query.toChange.category_description = category_description };
+
+    $.ajax({
+        method: "POST",
+        url: "/admin/updateCategory",
+        contentType: "application/json",
+        data: JSON.stringify(query)
+    }).done(function(res){
+        if(res.error){
+            alert(res.error.message);
+        } else if(res.category == false) {
+            alert("There is some error occurred.")
+        }
+        $("#UDCategoryModal").modal('hide');
+    });
+}
+
+//DELETE CATEGORY
+function deleteCategory(){
+    let category = $("#UDCategoryModalCategory option:selected").val(); //ID
+    let category_name = $("#UDCategoryModalName").val();
+    
+    let verify_name = $("#UDCategoryModalDeleteInput").val();
+    //ITEM DELETES ONLY IF ENTERED VALUE MATCHES ORIGINAL ITEM NAME
+    if(verify_name != category_name){
+        $("#UDCategoryModalDeleteInput").popover('enable');
+        $("#UDCategoryModalDeleteInput").popover('show');
+        return;
+    }
+    $("#UDCategoryModalDeleteInput").popover('hide');
+    $("#UDCategoryModalDeleteInput").popover('disable');
+
+    let query = {};
+    query.category_id = category;
+
+    $.ajax({
+        method: "POST",
+        url: "/admin/deleteCategory",
+        contentType: "application/json",
+        data: JSON.stringify(query)
+    }).done(function(res){
+        if(res.error){
+            alert(res.error.message);
+        } else if(res.category == false) {
+            alert("There is some error occurred.")
+        }
+        $("#UDCategoryModal").modal('hide');
+    });
+}
+
+//ADD SELLER
+function addSeller(){
+    let new_seller = $("#AddSellerModalName").val();
+    let new_descr = $("#AddSellerModalDescr").val();
+    let new_img = $("#AddSellerModalImg").val();
+    let query = {};
+    if(!new_seller) { alert("Enter seller name"); return; }
+
+    if(new_descr){ query.seller_description = new_descr };
+    if(new_img){ query.seller_image = new_img };
+    query.seller_name = new_seller;
+
+    $.ajax({
+        method: "POST",
+        url: "/admin/addSeller",
+        contentType: "application/json",
+        data: JSON.stringify(query)
+    }).done(function(res){
+        if(res.error){
+            alert(res.error.message);
+        } else if(res.seller == false) {
+            alert("There is some error occurred.")
+        }
+        $("#AddSellerModal").modal('hide');
+    });
+}
+
+//UPDATE SELLER
+function updateSeller(){
+    let seller = $("#UDSellerModalSeller option:selected").val(); //ID
+    let seller_name = $("#UDSellerModalName").val();
+    let seller_description = $("#UDSellerModalDescr").val();
+    let query = {};
+    query.toChange = {};
+
+    if(!seller_name) { alert("Enter seller name"); return; }
+
+    query.seller_id = seller;
+    query.toChange.seller_name = seller_name;
+    if(seller_description){ query.toChange.seller_description = seller_description };
+
+    $.ajax({
+        method: "POST",
+        url: "/admin/updateSeller",
+        contentType: "application/json",
+        data: JSON.stringify(query)
+    }).done(function(res){
+        if(res.error){
+            alert(res.error.message);
+        } else if(res.seller == false) {
+            alert("There is some error occurred.")
+        }
+        $("#UDSellerModal").modal('hide');
+    });
+}
+
+//DELETE SELLER
+function deleteSeller(){
+    let seller = $("#UDSellerModalSeller option:selected").val(); //ID
+    let seller_name = $("#UDSellerModalName").val();
+    
+    let verify_name = $("#UDSellerModalDeleteInput").val();
+    //SELLER DELETES ONLY IF ENTERED VALUE MATCHES ORIGINAL SELLER NAME
+    if(verify_name != seller_name){
+        $("#UDSellerModalDeleteInput").popover('enable');
+        $("#UDSellerModalDeleteInput").popover('show');
+        return;
+    }
+    $("#UDSellerModalDeleteInput").popover('hide');
+    $("#UDSellerModalDeleteInput").popover('disable');
+
+    let query = {};
+    query.seller_id = seller;
+
+    $.ajax({
+        method: "POST",
+        url: "/admin/deleteSeller",
+        contentType: "application/json",
+        data: JSON.stringify(query)
+    }).done(function(res){
+        if(res.error){
+            alert(res.error.message);
+        } else if(res.seller == false) {
+            alert("There is some error occurred.")
+        }
+        $("#UDSellerModal").modal('hide');
     });
 }
 
@@ -327,13 +548,14 @@ function getFilterInfo(){
     }
 }
 
-function setupModalAdmin(){ //SETUP ADMIN MODAL DROPDOWNS
+//SETUP ADMIN MODAL DROPDOWNS
+function setupModalAdmin(){ 
     let sellers = [];
     ($("#Seller input").toArray()).forEach(seller => { //GET ALL SELLERS FROM PAGE
         sellers.push({value: seller.id, text: seller.value});
     });
     let categories = [];
-    ($("#Category input").toArray()).forEach(category => { //GET ALL SELLERS FROM PAGE
+    ($("#Category input").toArray()).forEach(category => { //GET ALL CATEGORIES FROM PAGE
         categories.push({value: category.id, text: category.value});
     });
 
@@ -351,13 +573,14 @@ function setupModalAdmin(){ //SETUP ADMIN MODAL DROPDOWNS
     });
 }
 
-function setupAddItemModal(){ //SETUP ADD ITEM MODAL DROPDOWNS
+//SETUP ADD ITEM MODAL DROPDOWNS
+function setupAddItemModal(){ 
     let sellers = [];
     ($("#Seller input").toArray()).forEach(seller => { //GET ALL SELLERS FROM PAGE
         sellers.push({value: seller.id, text: seller.value});
     });
     let categories = [];
-    ($("#Category input").toArray()).forEach(category => { //GET ALL SELLERS FROM PAGE
+    ($("#Category input").toArray()).forEach(category => { //GET ALL CATEGORIES FROM PAGE
         categories.push({value: category.id, text: category.value});
     });
 
@@ -372,5 +595,48 @@ function setupAddItemModal(){ //SETUP ADD ITEM MODAL DROPDOWNS
             value: c.value,
             text : c.text 
         }));
+    });
+}
+
+//SETUP UPDATE CATEGORY MODAL DROPDOWNS
+function setupUDCategoryModal(){ 
+    let categories = [];
+    ($("#Category input").toArray()).forEach(category => { //GET ALL CATEGORIES FROM PAGE
+        let descr = category.dataset.descr;
+        if(descr){
+            categories.push({value: category.id, text: category.value, descr: descr});
+        } else {
+            categories.push({value: category.id, text: category.value});
+        }
+        
+    });
+    $.each(categories, (i, c) => {
+        let option = $('<option>', { 
+            value: c.value,
+            text : c.text
+        });
+        option.attr("data-descr", c.descr);
+        $('#UDCategoryModalCategory').append(option);
+    });
+}
+
+function setupUDSellerModal(){
+    let sellers = [];
+    ($("#Seller input").toArray()).forEach(seller => { //GET ALL SELLERS FROM PAGE
+        let descr = seller.dataset.descr;
+        if(descr){
+            sellers.push({value: seller.id, text: seller.value, descr: descr});
+        } else {
+            sellers.push({value: seller.id, text: seller.value});
+        }
+        
+    });
+    $.each(sellers, (i, c) => {
+        let option = $('<option>', { 
+            value: c.value,
+            text : c.text
+        });
+        option.attr("data-descr", c.descr);
+        $('#UDSellerModalSeller').append(option);
     });
 }

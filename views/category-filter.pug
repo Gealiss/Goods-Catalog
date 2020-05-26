@@ -7,5 +7,5 @@ mixin category_filter(categories)
                 -for(let i = 0; i < categories.length; i++)
                     -let checkboxID = categories[i]._id;
                     div.form-check
-                        input.form-check-input(id = checkboxID, type="checkbox", value=categories[i].category_name)
+                        input.form-check-input(id = checkboxID, type="checkbox", value=categories[i].category_name, data-descr=categories[i].category_description)
                         label.form-check-label(for = checkboxID)= categories[i].category_name
