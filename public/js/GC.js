@@ -237,6 +237,11 @@ function updateItem(){
         contentType: "application/json",
         data: JSON.stringify(query)
     }).done(function(res){
+        if(res.error){
+            alert(res.error.message);
+        } else if(res.item == false) {
+            alert("There is some error occurred.")
+        }
         $("#AdminModalItem").modal('hide');
     });
 }
@@ -278,11 +283,11 @@ function addItem(){
     let query = {};
 
     //THIS FIELDS IS REQUIRED
-    if(!new_seller) { return; }
-    if(!new_category) { return; }
-    if(!new_img) { return; }
-    if(!new_name) { return; }
-    if(!new_price) { return; }
+    if(!new_seller) { alert("Seller is required"); return; }
+    if(!new_category) { alert("Category is required"); return; }
+    if(!new_img) { alert("Image is required"); return; }
+    if(!new_name) { alert("Name is required"); return; }
+    if(!new_price) { alert("Price is required"); return; }
 
     query.seller = new_seller;
     query.item_category = new_category;

@@ -123,7 +123,9 @@ app.use('/admin', checkRole(User.Roles.admin), adminRouter); //min role - admin 
 app.use('/owner', checkRole(User.Roles.owner), ownerRouter); //min role - owner (3)
  
 app.use(function (req, res, next) {
-    res.status(404).send("Not Found")
+    let error = { message: "Not Found", status: 404 };
+    next(error);
+    //res.status(404).send()
 });
 
 // Error handlers

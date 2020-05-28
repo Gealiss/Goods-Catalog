@@ -1,22 +1,14 @@
-/* {"_id":{"$oid":"5e8f5fc21c9d4400001a5381"},
-    "item_name":"Water 1L",
-    "item_description":"A bottle of water, 1L.",
-    "item_price":0.89,
-    "item_category":"food",
-    "item_price_history":[
-        {
-            "date":{"$date":"2020-04-06T21:00:00Z"},
-            "price":0.89},
-        {
-            "date":{"$date":"2020-02-08T21:00:00Z"},
-            "price":0.85
-        }],
-    "item_img":"https://cdn.shopify.com/s/files/1/1742/7295/products/Water_Bottle_-_No_Brand_1024x1024.jpg"}
-*/
-
 const mongoose = require('mongoose');
 
-//const Categories = Object.freeze({"food":1, "alcohol":2, "other": 3});
+/* var validatePrice = function(item_price) {
+    let min = 0.01;
+    let max = 1000000;
+    if(price >= min && price <= max){
+        return true;
+    } else {
+        return false;
+    }    
+}; */
 
 const itemSchema = new mongoose.Schema({
     item_name: {
@@ -31,9 +23,10 @@ const itemSchema = new mongoose.Schema({
     },
     item_price: {
         type: Number,
-        required: 'Item price is required',
         min: 0.01,
-        max: 1000000
+        max: 1000000,
+        required: 'Item price is required',
+        //validate: [validatePrice, 'Please fill a valid price (0.01 - 1000000)']
     },
     item_price_history: {
         type: [{
@@ -49,6 +42,7 @@ const itemSchema = new mongoose.Schema({
     item_image:{
         type: String,
         required: "Item image is required",
+        minlength: 5,
         maxlength: 500
     },
     seller:

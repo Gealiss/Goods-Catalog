@@ -7,7 +7,7 @@ const Item = require('./schemes/item.js');
 const Seller = require('./schemes/seller.js');
 const Category = require('./schemes/category.js');
 
-const Test = require('./schemes/test.js'); //JUST FOR TESTS
+//const Test = require('./schemes/test.js'); //JUST FOR TESTS
 
 mongoose.Promise = Promise; // Просим Mongoose использовать стандартные Промисы
 mongoose.set('debug', true);  // Просим Mongoose писать все запросы к базе в консоль. Удобно для отладки кода
@@ -81,7 +81,7 @@ module.exports.UpdateUser = function (id, toChange, cb) {
     if (mongoose.connection.readyState != 1) {
         return cb("No connection", false);
     }
-    User.findByIdAndUpdate(id, toChange, function (err, user) {
+    User.findByIdAndUpdate(id, toChange, { runValidators: true }, function (err, user) {
         if (err) {
             console.log(err);
             return cb(err, false);
@@ -151,7 +151,7 @@ module.exports.UpdateSeller = function (id, toChange, cb) {
     if (mongoose.connection.readyState != 1) {
         return cb("No connection", false);
     }
-    Seller.findByIdAndUpdate(id, toChange, function (err, seller) {
+    Seller.findByIdAndUpdate(id, toChange, { runValidators: true }, function (err, seller) {
         if (err) {
             console.log(err);
             return cb(err, false);
@@ -221,7 +221,7 @@ module.exports.UpdateCategory = function (id, toChange, cb) {
     if (mongoose.connection.readyState != 1) {
         return cb("No connection", false);
     }
-    Category.findByIdAndUpdate(id, toChange, function (err, category) {
+    Category.findByIdAndUpdate(id, toChange, { runValidators: true }, function (err, category) {
         if (err) {
             console.log(err);
             return cb(err, false);
@@ -301,7 +301,7 @@ module.exports.UpdateItem = function (id, toChange, cb) {
         return cb("No connection", false);
     }
 
-    Item.findByIdAndUpdate(id, toChange, (err, item) => {
+    Item.findByIdAndUpdate(id, toChange, { runValidators: true }, (err, item) => {
         if (err) {
             console.log(err);
             return cb(err, false);
