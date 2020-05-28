@@ -27,10 +27,6 @@ require('./passport');
 const PORT_HTTPS = 8443 || process.env.PORT;
 const PORT_WS = 80 || process.env.PORT;
 
-//REDIS START
-//let redis = require('./redis.js');
-//redis.createClient(config.redis);
-
 //ROUTES
 const homeRouter = require("./routes/homeRouter.js");
 const adminRouter = require("./routes/adminRouter.js");
@@ -64,7 +60,7 @@ if (app.get('env') === 'production') {
     // Uncomment the line below if your application is behind a proxy (like on Heroku)
     // or if you're encountering the error message:
     // "Unable to verify authorization request state"
-    // app.set('trust proxy', 1);
+    app.set('trust proxy', 1);
 }
 
 //REDIRECT FROM HTTP
