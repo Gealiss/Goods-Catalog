@@ -1,4 +1,5 @@
 const mongoose = require('mongoose'); // стандартная прослойка для работы с MongoDB
+const config = require('./config.json');
 
 //Schemes
 const User = require('./schemes/user.js');
@@ -6,51 +7,38 @@ const Item = require('./schemes/item.js');
 const Seller = require('./schemes/seller.js');
 const Category = require('./schemes/category.js');
 
-//Emmiter
-const Emitter = require("events");
-let emitter = new Emitter();
-let eventName = "priceChange";
+//const Test = require('./schemes/test.js'); //JUST FOR TESTS
 
-//let connection;
+mongoose.Promise = Promise; // Просим Mongoose использовать стандартные Промисы
+mongoose.set('debug', true);  // Просим Mongoose писать все запросы к базе в консоль. Удобно для отладки кода
 
-module.exports = () => {
-    //connection = mongoConnection;
-    let module = {};
+mongoose.connect(config.mongoose.connString, config.mongoose.opts);
+let conn = mongoose.connection;
 
-    module.Emitter = emitter;
-    module.Connect = Connect;
-    module.Disconnect = Disconnect;
+conn.on('connected', function () {
+    console.log("Mongoose default connection is open", conn);
 
-    //USER
-    module.CreateUser = CreateUser;
-    module.UpdateUser = UpdateUser;
-    module.DeleteUser = DeleteUser;
-    module.GetUsers = GetUsers;
+    //TEST BLOCK
+/*     Test.create({test_name: "test5", test_rating: 1.1}, function (err, t) {
+        if (err) {
+            return console.log(err);
+        }
+        if (!t) {
+            return;
+        }
+        console.log(t);
+    }); */
+});
 
-    //SELLER
-    module.CreateSeller = CreateSeller;
-    module.UpdateSeller = UpdateSeller;
-    module.DeleteSeller = DeleteSeller;
-    module.GetSellers = GetSellers;
+conn.on('disconnected', function () {
+    console.log("Mongoose default connection is closed");
+});
 
-    //CATEGORY
-    module.CreateCategory = CreateCategory;
-    module.UpdateCategory = UpdateCategory;
-    module.DeleteCategory = DeleteCategory;
-    module.GetCategories = GetCategories;
+conn.on('error', function (err) {
+    console.log(error("Mongoose default connection has occured " + err + " error"));
+});
 
-    //ITEM
-    module.CreateItem = CreateItem;
-    module.UpdateItem = UpdateItem;
-    module.DeleteItem = DeleteItem;
-    module.GetItemByID = GetItemByID;
-    module.GetItems = GetItems;
-    module.CountItems = CountItems;
-
-    return module;
-}
-
-async function Connect() {
+module.exports.Connect = async function () {
     try {
         await mongoose.connect(config.mongoose.connString, config.mongoose.opts);
         if (mongoose.connection._readyState == 1)
@@ -61,7 +49,7 @@ async function Connect() {
     }
 };
 
-async function Disconnect() {
+module.exports.Disconnect = async function () {
     try {
         await mongoose.disconnect();
         if (mongoose.connection._readyState == 0)
@@ -73,7 +61,10 @@ async function Disconnect() {
 };
 
 //USER
-async function CreateUser(req, cb) {
+module.exports.CreateUser = function (req, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
     User.create(req, function (err, user) {
         if (err) {
             console.log(err);
@@ -86,7 +77,10 @@ async function CreateUser(req, cb) {
     });
 };
 
-async function UpdateUser(id, toChange, cb) {
+module.exports.UpdateUser = function (id, toChange, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
     User.findByIdAndUpdate(id, toChange, { runValidators: true }, function (err, user) {
         if (err) {
             console.log(err);
@@ -99,7 +93,11 @@ async function UpdateUser(id, toChange, cb) {
     });
 };
 
-async function DeleteUser(id, cb) {
+module.exports.DeleteUser = function (id, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
+
     User.findByIdAndDelete(id, (err, user) => {
         if (err) {
             console.log(err);
@@ -112,7 +110,10 @@ async function DeleteUser(id, cb) {
     });
 };
 
-async function GetUsers(filter, cb) { //filter: { user_email: email }
+module.exports.GetUsers = function (filter, cb) { //filter: { user_email: email }
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
     if(!filter){
         filter = {};
     }
@@ -130,7 +131,10 @@ async function GetUsers(filter, cb) { //filter: { user_email: email }
 };
 
 //SELLER
-async function CreateSeller(req, cb) {
+module.exports.CreateSeller = function (req, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
     Seller.create(req, function (err, seller) {
         if (err) {
             console.log(err);
@@ -143,7 +147,10 @@ async function CreateSeller(req, cb) {
     });
 };
 
-async function UpdateSeller(id, toChange, cb) {
+module.exports.UpdateSeller = function (id, toChange, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
     Seller.findByIdAndUpdate(id, toChange, { runValidators: true }, function (err, seller) {
         if (err) {
             console.log(err);
@@ -156,7 +163,11 @@ async function UpdateSeller(id, toChange, cb) {
     });
 };
 
-async function DeleteSeller(id, cb) {
+module.exports.DeleteSeller = function (id, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
+
     Seller.findByIdAndDelete(id, (err, seller) => {
         if (err) {
             console.log(err);
@@ -169,7 +180,10 @@ async function DeleteSeller(id, cb) {
     });
 };
 
-async function GetSellers(filter, cb) { //filter: { seller_name: name }
+module.exports.GetSellers = function (filter, cb) { //filter: { seller_name: name }
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
     if(!filter){
         filter = {};
     }
@@ -187,7 +201,10 @@ async function GetSellers(filter, cb) { //filter: { seller_name: name }
 };
 
 //CATEGORY
-async function CreateCategory(req, cb) {
+module.exports.CreateCategory = function (req, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
     Category.create(req, function (err, category) {
         if (err) {
             console.log(err);
@@ -200,7 +217,10 @@ async function CreateCategory(req, cb) {
     });
 };
 
-async function UpdateCategory(id, toChange, cb) {
+module.exports.UpdateCategory = function (id, toChange, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
     Category.findByIdAndUpdate(id, toChange, { runValidators: true }, function (err, category) {
         if (err) {
             console.log(err);
@@ -213,7 +233,11 @@ async function UpdateCategory(id, toChange, cb) {
     });
 };
 
-async function DeleteCategory(id, cb) {
+module.exports.DeleteCategory = function (id, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
+
     Category.findByIdAndDelete(id, (err, category) => {
         if (err) {
             console.log(err);
@@ -226,7 +250,10 @@ async function DeleteCategory(id, cb) {
     });
 };
 
-async function GetCategories(filter, cb) { //filter: { category_name: name }
+module.exports.GetCategories = function (filter, cb) { //filter: { category_name: name }
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
     if(!filter){
         filter = {};
     }
@@ -244,7 +271,10 @@ async function GetCategories(filter, cb) { //filter: { category_name: name }
 };
 
 //ITEM
-async function CreateItem(req, cb) {
+module.exports.CreateItem = function (req, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
     Item.create(req, function (err, item) {
         if (err) {
             console.log(err);
@@ -259,8 +289,18 @@ async function CreateItem(req, cb) {
     });
 };
 
-//emition
-async function UpdateItem(id, toChange, cb) {
+const Emitter = require("events");
+
+let emitter = new Emitter();
+let eventName = "priceChange";
+
+module.exports.emitter = emitter;
+
+module.exports.UpdateItem = function (id, toChange, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
+
     Item.findByIdAndUpdate(id, toChange, { runValidators: true }, (err, item) => {
         if (err) {
             console.log(err);
@@ -278,7 +318,11 @@ async function UpdateItem(id, toChange, cb) {
     });
 };
 
-async function DeleteItem(id, cb) {
+module.exports.DeleteItem = function (id, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
+
     Item.findByIdAndDelete(id, (err, item) => {
         if (err) {
             console.log(err);
@@ -291,7 +335,10 @@ async function DeleteItem(id, cb) {
     });
 };
 
-async function GetItemByID(id, cb) {
+module.exports.GetItemByID = function (id, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
     if(!id){
         return cb(null, false);
     }
@@ -311,7 +358,11 @@ async function GetItemByID(id, cb) {
     });
 };
 
-async function GetItems(skip, limit, filter, cb) {
+module.exports.GetItems = function (skip, limit, filter, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
+
     Item.find(filter.item)
     .populate({
         path:'item_category',
@@ -343,7 +394,11 @@ async function GetItems(skip, limit, filter, cb) {
     });
 };
 
-async function CountItems(filter, cb) {
+module.exports.CountItems = function (filter, cb) {
+    if (mongoose.connection.readyState != 1) {
+        return cb("No connection", false);
+    }
+
     Item.find(filter.item)
     .populate({
         path:'item_category',

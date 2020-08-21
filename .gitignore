@@ -1,6 +1,4 @@
 # .gitignore
-.vscode
-node_modules
 .env
 config.json
 *.csr

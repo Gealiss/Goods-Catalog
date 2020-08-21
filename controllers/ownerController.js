@@ -1,4 +1,4 @@
-const db = require('../db.js')();
+const db = require('../db.js');
 
 exports.addUser = function (req, res) {
     db.CreateUser(req.body, (err, user) => {
