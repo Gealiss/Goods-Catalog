@@ -4,8 +4,6 @@ const JwtStrategy = require('passport-jwt').Strategy; // авторизация 
 const ExtractJwt = require('passport-jwt').ExtractJwt; // авторизация через JWT
 
 const User = require('./schemes/user.js');
-const config = require('./config.json');
-const db = require('./db.js');
 
 passport.use(new LocalStrategy({
     usernameField: 'email',
@@ -30,7 +28,7 @@ passport.use(new LocalStrategy({
 
 const jwtOptions = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: config.jwtsecret
+    secretOrKey: process.env.JWT_SECRET
 };
   
 passport.use(new JwtStrategy(jwtOptions, function (payload, done) {

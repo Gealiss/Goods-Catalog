@@ -1,5 +1,6 @@
-const db = require('../db.js');
-const pug = require('pug');
+const db = require('../db.js')();
+
+// Mongoose connection available via req.connection
 
 exports.index = function (req, res) {
 
@@ -24,7 +25,7 @@ exports.index = function (req, res) {
 };
 
 exports.about = function (req, res) {
-    res.send("Course project: Goods Catalog. 2020 y.");
+    res.send("Project: Goods Catalog. y.2020");
 };
 
 exports.getItems = function (req, res) {
