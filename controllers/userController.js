@@ -8,4 +8,3 @@ exports.index = function (req, res) {
     title: 'Profile page'
   });
 };
-//test
