@@ -5,9 +5,10 @@ const passport = require('passport');
 const moment = require('moment');
 
 const db = require('../db.js');
+const config = require('../config.json');
 
 router.post('/login', (req, res, next) => {
-  try {
+  try {    
     passport.authenticate('local', { failureRedirect: '../', session: false }, function (err, user) {
       if (err) {
         return next(err);
@@ -27,16 +28,15 @@ router.post('/login', (req, res, next) => {
           }
         });
 
-        const token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: '1h'}); //здесь создается JWT
+        const token = jwt.sign(payload, config.jwtsecret, {expiresIn: '1h'}); //здесь создается JWT
         res.cookie('jwt', token, {
-          secure: false, //set true
+          secure: true,
           httpOnly: true,
           expires: moment().add(1, 'h').toDate() //1 hour
           //expires: new Date(Date.now() + 1 * 3600 * 1000) //1 hour
         });
 
-        //return res.redirect('http://localhost:8080/');
-        return res.json({ err: null, url: `${req.protocol}://${req.hostname}:${req.port}/`}); //send redirect url - home page
+        return res.json({ err: null, url: `${req.protocol}://${req.host}:${req.port}/`}); //send redirect url - home page
       }
     })(req, res, next);    
   }

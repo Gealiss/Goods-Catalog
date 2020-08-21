@@ -1,4 +1,4 @@
-const db = require('../db.js')();
+const db = require('../db.js');
 
 exports.index = function (req, res) {
     res.send("Главная страница admin");

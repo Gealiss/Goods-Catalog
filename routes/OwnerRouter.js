@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const ownerController = require("../controllers/ownerController.js");
 
 const ownerRouter = express.Router();
