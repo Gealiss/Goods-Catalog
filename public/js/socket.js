@@ -1,4 +1,5 @@
-var socket = new WebSocket("ws://localhost");
+var host = location.origin.replace(/^http/, 'ws')
+var socket = new WebSocket(host);
 
 socket.onopen = function() {
     console.log("Соединение установлено.");

@@ -23,6 +23,7 @@ try {
 }
 
 const loaders = require('./loaders');
+const websocketLoader = require('./loaders/websocket')
 const express = require('express');
 
 
@@ -40,13 +41,16 @@ async function startServer() {
 
   await loaders({ expressApp: app });
 
-  app.listen(PORT, err => {
+  let server = app.listen(PORT, err => {
     if (err) {
       console.log(err);
       return;
     }
     console.log('Server is ready at port: ' + PORT);
   });
+
+  await websocketLoader(server);
+  console.log('Websocket Initialized'); 
 }
 
 startServer();

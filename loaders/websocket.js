@@ -4,9 +4,9 @@ const WebSocket = require('ws');
 const emitter = require('../db')().Emitter;
 let eventName = "priceChange";
 
-module.exports = async (port_ws) => {
+module.exports = async (server) => {
     //WEBSOCKET
-    const wss = new WebSocket.Server({port: port_ws});
+    const wss = new WebSocket.Server({server: server});
 
     wss.on('connection', function connection(ws) {
     ws.on('message', function incoming(message) {
