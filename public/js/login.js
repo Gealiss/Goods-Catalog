@@ -14,31 +14,6 @@ $(document).ready(function() {
           $this.html(loadingText);
         }
 
-        /* var headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        headers.append('Accept', 'application/json');
-        
-        return fetch('/login', {
-            method: 'POST',
-            mode: 'same-origin',
-            redirect: 'follow',
-            credentials: 'include', // Don't forget to specify this if you need cookies
-            headers: headers,
-            body: JSON.stringify({"email": email, "password": pass })
-        }).then((res) => {
-            return res.json();
-        })
-        .then((data) => {
-            $this.html($this.data('original-text'));
-            if(!data.err){
-                $("#ModalLoginInfo").text("");
-                $("#ModalLogin").modal('hide');
-                window.location.replace(data.url);
-            } else {
-                $("#ModalLoginInfo").text(data.err);
-            }
-        }); */
-
         $.ajax({
             method: "POST",
             url: "/login",
@@ -50,7 +25,8 @@ $(document).ready(function() {
             if(!res.err){
                 $("#ModalLoginInfo").text("");
                 $("#ModalLogin").modal('hide');
-                window.location.replace(res.url);
+                //window.location.replace(res.url);
+                window.location.reload(true);
             } else {
                 $("#ModalLoginInfo").text(res.err);
             }
