@@ -16,16 +16,18 @@ var credentials = {key: privateKey, cert: certificate}; */
 }); */
 
 const PORT = process.env.PORT || 8080;
-const result = require('dotenv').config();
+try {
+  require('dotenv').config();
+} catch (error) {
+  console.log(error);
+}
 
 const loaders = require('./loaders');
 const express = require('express');
 
 
 async function startServer() {
-  if(result.error){
-    throw result.error
-  }
+
   const app = express();
 
   //port number available from req.port
