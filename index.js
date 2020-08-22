@@ -37,7 +37,7 @@ async function startServer() {
     next();
   });
 
-  app.set("env", "development"); // development or production
+  //app.set("env", process.env.NODE_ENV); // development or production
 
   await loaders({ expressApp: app });
 
