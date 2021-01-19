@@ -1,7 +1,8 @@
 # Goods-Catalog
 Online goods catalog build on NodeJS. My course project.
 Database - MongoDB.
-Main tools used:
+
+Tech stack:
 - Pug
 - JQuery
 - WebSocket
